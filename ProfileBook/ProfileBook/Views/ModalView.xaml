@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProfileBook.Views.ModalView"
+             BackgroundColor="Transparent">
+
+    <FlexLayout Direction="Row">
+        <FlexLayout FlexLayout.Grow="1"/>
+        <FlexLayout FlexLayout.Grow="5" AlignItems="Center">
+            <FlexLayout.GestureRecognizers>
+                <TapGestureRecognizer  Command="{Binding GoBackCommand}" />
+            </FlexLayout.GestureRecognizers>
+            <Image Source="{Binding PictureSource}" FlexLayout.Grow="1"/>
+        </FlexLayout>
+        <FlexLayout FlexLayout.Grow="1"/>
+    </FlexLayout>
+
+</ContentPage>

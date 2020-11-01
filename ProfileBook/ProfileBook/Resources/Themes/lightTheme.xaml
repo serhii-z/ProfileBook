@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProfileBook.Resources.Themes.lightTheme">
+    <Color x:Key="pageBackgroundColor">White</Color>
+    <Color x:Key="buttonBackgroundColor">Chocolate</Color>
+    <Color x:Key="buttonTextColor">Black</Color>
+</ResourceDictionary>

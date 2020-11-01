@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProfileBook.Views.MainListView"
+             Title="{x:Static resource:Resource.MainListTitle}"
+             xmlns:resource="clr-namespace:ProfileBook.Properties"
+             NavigationPage.HasBackButton="False">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Name="MenuItem1" 
+                     Order="Primary" 
+                     Icon="exit.png" 
+                     Priority="0" 
+                     Command="{Binding LogOutCommand}" 
+                     CommandParameter = "0"/>
+        <ToolbarItem Name="MenuItem2" 
+                     Order="Primary" 
+                     Icon="settings.png" 
+                     Priority="1" 
+                     Command="{Binding GoToSettingsViewCommand}" 
+                     CommandParameter = "1"/>
+    </ContentPage.ToolbarItems>
+
+    <StackLayout BackgroundColor="{DynamicResource pageBackgroundColor}">
+        <Grid>
+            <AbsoluteLayout >
+                <ListView AbsoluteLayout.LayoutFlags="All"
+                          ItemsSource="{Binding Items, Mode=TwoWay}"
+                          SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                          HasUnevenRows="True"
+                          AbsoluteLayout.LayoutBounds="0,1,1,1"
+                          VerticalOptions="FillAndExpand"
+                          x:Name="listView">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <ViewCell.ContextActions>
+                                    <MenuItem Text="Edit" 
+                                              Command="{Binding Path=BindingContext.EditCommand, Source={x:Reference listView}}" 
+                                              CommandParameter="{Binding .}" />
+                                    <MenuItem Text="Delete" 
+                                              Command="{Binding Path=BindingContext.DeleteCommand, Source={x:Reference listView}}" 
+                                              CommandParameter="{Binding .}" />
+                                </ViewCell.ContextActions>
+                                <ViewCell.View>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Image Source="{Binding ImagePath}" 
+                                               WidthRequest="80" 
+                                               HeightRequest="60" />
+                                        <StackLayout>
+                                            <Label Text="{Binding NickName}" 
+                                                   FontSize="18" 
+                                                   FontAttributes="Bold"/>
+                                            <Label Text="{Binding Name}" />
+                                            <Label Text="{Binding StartDate}" />
+                                        </StackLayout>
+                                    </StackLayout>
+                                </ViewCell.View>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.Behaviors>
+                    </ListView.Behaviors>
+                </ListView>
+                <Label  Text="{x:Static resource:Resource.MainListLabelText}"
+                        IsVisible="{Binding IsNoProfiles}"                       
+                        AbsoluteLayout.LayoutBounds="0.5, 0.5, 200, 25"
+                        AbsoluteLayout.LayoutFlags="PositionProportional"/>
+                <ImageButton Grid.Column="1"
+                        Source="add.png"
+                        WidthRequest="96" 
+                        HeightRequest="96"
+                        HorizontalOptions="End" 
+                        VerticalOptions="End"
+                        BackgroundColor="Transparent"
+                        AbsoluteLayout.LayoutFlags="PositionProportional"
+                        AbsoluteLayout.LayoutBounds="1.0,1.0,-1,-1"
+                        Margin="0,0,20,40"
+                        Command="{Binding AddCommand}">
+                </ImageButton>
+            </AbsoluteLayout>
+        </Grid>
+    </StackLayout>
+
+</ContentPage>

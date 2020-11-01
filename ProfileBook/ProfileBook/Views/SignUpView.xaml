@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProfileBook.Views.SignUpView"
+             Title="{x:Static resource:Resource.SignUpTitle}"
+             xmlns:resource="clr-namespace:ProfileBook.Properties">
+
+    <FlexLayout Direction="Row" BackgroundColor="{DynamicResource pageBackgroundColor}">
+
+        <FlexLayout FlexLayout.Grow="1"></FlexLayout>
+        
+        <FlexLayout FlexLayout.Grow="6" Direction="Column">
+
+            <FlexLayout FlexLayout.Grow="2" Direction="Column" JustifyContent="Center">
+                <Entry Placeholder="{x:Static resource:Resource.SignUpLoginPlaceholder}" 
+                       Text="{Binding EntryLoginText, Mode=TwoWay}"/>
+                <Entry Placeholder="{x:Static resource:Resource.SignUpPasswordPlaceholder}" 
+                       IsPassword="True" Margin="0,10,0,0" 
+                       Text="{Binding EntryPasswordText, Mode=TwoWay}"/>
+                <Entry Placeholder="{x:Static resource:Resource.SignUpConfirmPasswordPlaceholder}" 
+                       IsPassword="True"
+                       Margin="0,10,0,0" 
+                       Text="{Binding EntryConfirmPasswordText, Mode=TwoWay}"/>
+            </FlexLayout>
+
+            <FlexLayout FlexLayout.Grow="1" Direction="Column" JustifyContent="Center">
+                <Button Text="{x:Static resource:Resource.SignUpButtonText}" 
+                        Command="{Binding SignUpCommand}" 
+                        IsEnabled="{Binding EnabledButton}" 
+                        BackgroundColor="{DynamicResource buttonBackgroundColor}" 
+                        TextColor="{DynamicResource buttonTextColor}"/>
+            </FlexLayout>
+
+        </FlexLayout>
+        
+        <FlexLayout FlexLayout.Grow="1"></FlexLayout>
+
+    </FlexLayout>
+
+</ContentPage>

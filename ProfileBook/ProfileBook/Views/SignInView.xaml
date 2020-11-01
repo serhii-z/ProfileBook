@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProfileBook.Views.SignInView"
+             Title="{x:Static resource:Resource.SignInTitle}"
+             xmlns:resource="clr-namespace:ProfileBook.Properties"
+             NavigationPage.HasBackButton="False">
+
+    <FlexLayout Direction="Row" BackgroundColor="{DynamicResource pageBackgroundColor}">
+
+        <FlexLayout FlexLayout.Grow="1"></FlexLayout>
+        
+        <FlexLayout FlexLayout.Grow="6" Direction="Column">
+
+            <FlexLayout FlexLayout.Grow="2" Direction="Column" JustifyContent="Center">
+                <Entry Placeholder="{x:Static resource:Resource.SignInLoginPlaceholder}" 
+                       Text="{Binding EntryLoginText}"/>
+                <Entry Placeholder="{x:Static resource:Resource.SignInPasswordPlaceholder}" 
+                       IsPassword="True" 
+                       Margin="0,10,0,0" 
+                       Text="{Binding EntryPasswordText}"/>
+            </FlexLayout>
+
+            <FlexLayout FlexLayout.Grow="1" Direction="Column" JustifyContent="Center">
+                <Button Text="{x:Static resource:Resource.SignInButtonText}" 
+                        Command="{Binding LogInCommand}" 
+                        IsEnabled="{Binding EnabledButton}" 
+                        BackgroundColor="{DynamicResource buttonBackgroundColor}" 
+                        TextColor="{DynamicResource buttonTextColor}"/>
+                <Label Text="{x:Static resource:Resource.SignInLabelText}" 
+                       HorizontalTextAlignment="Center" 
+                       Margin="0,15,0,0" 
+                       TextColor="Blue" 
+                       TextDecorations="Underline">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToSignUpViewCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </FlexLayout>
+
+        </FlexLayout>
+        
+        <FlexLayout FlexLayout.Grow="1"></FlexLayout>
+
+    </FlexLayout>
+
+</ContentPage>

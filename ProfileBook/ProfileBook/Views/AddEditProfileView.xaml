@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProfileBook.Views.AddEditProfileView"
+             Title="{x:Static resource:Resource.AddTitle}"
+             xmlns:resource="clr-namespace:ProfileBook.Properties">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Name="MenuItem2" 
+                     Order="Primary" 
+                     Icon="save.png" 
+                     Priority="0" 
+                     Command="{Binding SaveCommand}" 
+                     CommandParameter = "1"/>
+    </ContentPage.ToolbarItems>
+
+    <FlexLayout Direction="Row" 
+                BackgroundColor="{DynamicResource pageBackgroundColor}">
+
+        <FlexLayout FlexLayout.Grow="1"></FlexLayout>
+        
+        <FlexLayout FlexLayout.Grow="6" Direction="Column">
+
+            <FlexLayout FlexLayout.Grow="1" 
+                        Direction="Column" 
+                        JustifyContent="Center">
+                <Image FlexLayout.Basis="90%"
+                       Aspect="AspectFit"
+                       Source="{Binding PictureSource}" >
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding TapCommand}"/>
+                    </Image.GestureRecognizers>
+                </Image>
+            </FlexLayout>
+
+            <FlexLayout FlexLayout.Grow="1" 
+                        Direction="Column" 
+                        JustifyContent="Center" >
+                <Entry Placeholder="{x:Static resource:Resource.AddNickNamePlaceholder}" 
+                       Text="{Binding EntryNickNameText, Mode=TwoWay}"/>
+                <Entry Placeholder="{x:Static resource:Resource.AddNamePlaceholder}" 
+                       Text="{Binding EntryNameText, Mode=TwoWay}"/>
+            </FlexLayout>
+
+            <FlexLayout FlexLayout.Grow="1" 
+                        Direction="Column" 
+                        JustifyContent="Center" >
+                <Editor Placeholder="{x:Static resource:Resource.AddDescription}" 
+                        Text="{Binding EditorText, Mode=TwoWay}"
+                        FlexLayout.Basis="100%"
+                        BackgroundColor="LightGray" 
+                        MaxLength="120"/>
+            </FlexLayout>
+
+            <FlexLayout FlexLayout.Grow="0.2" ></FlexLayout>
+
+        </FlexLayout>
+        
+        <FlexLayout FlexLayout.Grow="1"></FlexLayout>
+
+    </FlexLayout>
+
+</ContentPage>
