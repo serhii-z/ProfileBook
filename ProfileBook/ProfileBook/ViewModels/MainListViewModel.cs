@@ -1,5 +1,4 @@
 ﻿using Prism.Navigation;
-using Prism.Services;
 using ProfileBook.Models;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
@@ -12,14 +11,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Xamarin.Forms;
+using ProfileBook.Properties;
 
 namespace ProfileBook.ViewModels
 {
     public class MainListViewModel : BaseViewModel
     {
-        private User _user;
-        private List<Profile> _profiles;
-
         public MainListViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
             IAuthenticationService authentication, IValidator validator, 
@@ -27,6 +24,13 @@ namespace ProfileBook.ViewModels
             base(navigationService, repository, manager, authorization, authentication, validator, profileService)
         {
             
+        }
+
+        private string _title;
+        public string Title
+        {
+            get => _title;
+            set => SetProperty(ref _title, value);
         }
 
         private ObservableCollection<Profile> _items;
@@ -65,35 +69,63 @@ namespace ProfileBook.ViewModels
             await navigationService.NavigateAsync($"{nameof(ModalView)}", parameters, useModalNavigation: true);
         }
 
-        private void ShowCollection()
+        private List<Profile> GetProfiles(string sortingName, int userId)
         {
-            Items = new ObservableCollection<Profile>();
+            var profiles = profileService.GetProfiles(repository, userId);
 
-            foreach (var item in _profiles)
+            switch (sortingName)
             {
-                Items.Add(item);
+                case "name":
+                    profiles = manager.SortByName(repository, userId);
+                    break;
+                case "nickName":
+                    profiles = manager.SortByNickName(repository, userId);
+                    break;
+                case "date":
+                    profiles = manager.SortByDate(repository, userId);
+                    break;
             }
-            IsNoProfiles = false;
+
+            return profiles;
         }
 
-        public ICommand EditCommand => new Command(GoToEditViewAsync);
-
-        private async void GoToEditViewAsync(object ob)
+        private void ShowCollection()
         {
-            var profile = ob as Profile;
-            var parameters = new NavigationParameters();
-            parameters.Add("user", _user);
-            parameters.Add("profile", profile);
-            parameters.Add("profiles", _profiles);
-            await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}", parameters);
+            var sortingName = manager.GetSortingName();
+            var userId = authorization.GetAutorization();
+            var profiles = GetProfiles(sortingName, userId);
+
+            if (profiles.Count > 0)
+            {
+                Items = new ObservableCollection<Profile>();
+                foreach (var item in profiles)
+                {
+                    Items.Add(item);
+                }
+                IsNoProfiles = false;
+            }
+            else
+            {
+                IsNoProfiles = true;
+            }           
+        }
+
+        private void InitializeSettings()
+        {
+            var isDark = manager.GetThemeActive();
+            manager.ApplyTheme(isDark);
+
+            Title = Resource.MainListTitle;
         }
 
         public ICommand DeleteCommand => new Command(Delete);
 
         private async void Delete(object ob)
         {
-            var result = await App.Current.MainPage.DisplayAlert(Properties.Resource.AlertTitle, Properties.Resource.MainListAlertDelete, 
-                Properties.Resource.MainListAlertDeleteYes, Properties.Resource.MainListAlertDeleteNo);
+            var result = await App.Current.MainPage.DisplayAlert(Properties.Resource.AlertTitle, 
+                Properties.Resource.MainListAlertDelete, Properties.Resource.MainListAlertDeleteYes, 
+                Properties.Resource.MainListAlertDeleteNo);
+
             if (result)
             {
                 var profile = ob as Profile;
@@ -111,8 +143,7 @@ namespace ProfileBook.ViewModels
         private void CancelAuthorization()
         {
             authorization.ExecuteAutorization(0);
-            manager.IsDarkTheme = false;
-            manager.ChangeTheme();
+            manager.ApplyTheme(false);
             GoToSignInView();
         }
 
@@ -125,48 +156,31 @@ namespace ProfileBook.ViewModels
 
         private async void GoToSettingsView()
         {
-            var parameters = new NavigationParameters();
-            parameters.Add("user", _user);
-            parameters.Add("profiles", _profiles);
             await navigationService.NavigateAsync($"{nameof(SettingsView)}");
+        }
+
+        public ICommand EditCommand => new Command(GoToEditViewAsync);
+
+        private async void GoToEditViewAsync(object ob)
+        {
+            var profile = ob as Profile;
+            var parameters = new NavigationParameters();
+            parameters.Add("profile", profile);
+            await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}", parameters);
         }
 
         public ICommand AddCommand => new Command(GoToAddView);
 
         private async void GoToAddView()
         {
-            var parameters = new NavigationParameters();
-            parameters.Add("user", _user);
-            parameters.Add("profiles", _profiles);
-            await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}", parameters);
+            await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}");
         }
 
-        public override void Initialize(INavigationParameters parameters)
+        public override void OnNavigatedTo(INavigationParameters parameters)
         {
-            if (parameters.TryGetValue("user", out User user))
-            {
-                _user = user;
-            }
-            if (parameters.TryGetValue("theme", out bool theme))
-            {
-                if (theme)
-                {
-                    manager.IsDarkTheme = true;
-                }
-                manager.ChangeTheme();                
-            }
-            if (parameters.TryGetValue("profiles", out List<Profile> profiles))
-            {
-                _profiles = profiles;
-            }
-            if (profiles.Count > 0)
-            {
-                ShowCollection();
-            }
-            else
-            {
-                IsNoProfiles = true;
-            }
+            InitializeSettings();
+
+            ShowCollection();
         }
     }
 }

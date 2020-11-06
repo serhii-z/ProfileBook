@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ProfileBook.Views.MainListView"
-             Title="{x:Static resource:Resource.MainListTitle}"
+             x:Class="ProfileBook.Views.MainListView" 
              xmlns:resource="clr-namespace:ProfileBook.Properties"
+             Title="{Binding Title}"
              NavigationPage.HasBackButton="False">
 
     <ContentPage.ToolbarItems>
@@ -22,8 +22,11 @@
     </ContentPage.ToolbarItems>
 
     <StackLayout BackgroundColor="{DynamicResource pageBackgroundColor}">
+        
         <Grid>
-            <AbsoluteLayout >
+            
+            <AbsoluteLayout>
+                
                 <ListView AbsoluteLayout.LayoutFlags="All"
                           ItemsSource="{Binding Items, Mode=TwoWay}"
                           SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
@@ -46,7 +49,7 @@
                                     <StackLayout Orientation="Horizontal">
                                         <Image Source="{Binding ImagePath}" 
                                                WidthRequest="80" 
-                                               HeightRequest="60" />
+                                               HeightRequest="60"/>
                                         <StackLayout>
                                             <Label Text="{Binding NickName}" 
                                                    FontSize="18" 
@@ -78,8 +81,11 @@
                         Margin="0,0,20,40"
                         Command="{Binding AddCommand}">
                 </ImageButton>
+                
             </AbsoluteLayout>
+            
         </Grid>
+        
     </StackLayout>
 
 </ContentPage>

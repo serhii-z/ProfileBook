@@ -1,14 +1,10 @@
-﻿using Plugin.Settings;
-using Prism.Navigation;
-using ProfileBook.Models;
+﻿using Prism.Navigation;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
 using ProfileBook.Servises.Profile;
 using ProfileBook.Servises.Repository;
 using ProfileBook.Servises.Settings;
 using ProfileBook.Validators;
-using ProfileBook.Views;
-using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -16,14 +12,12 @@ namespace ProfileBook.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
-        private User _user;
-        private List<Profile> _profiles;
         public SettingsViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
-            IAuthenticationService authentication, IValidator validator, IProfileService profileService) :
+            IAuthenticationService authentication, IValidator validator, 
+            IProfileService profileService) :
             base(navigationService, repository, manager, authorization, authentication, validator, profileService)
-        { 
-        
+        {         
         }
 
         private bool _isName;
@@ -37,11 +31,11 @@ namespace ProfileBook.ViewModels
                 {
                     IsNickName = false;
                     IsDate = false;
-                    CrossSettings.Current.AddOrUpdateValue("name", true);
+                    manager.AddOrUpdateSorting("name");
                 }
                 else
                 {
-                    CrossSettings.Current.AddOrUpdateValue("name", false);
+                    manager.AddOrUpdateSorting(string.Empty);
                 }
             }
         }
@@ -57,11 +51,11 @@ namespace ProfileBook.ViewModels
                 {
                     IsName = false;
                     IsDate = false;
-                    CrossSettings.Current.AddOrUpdateValue("nickName", true);
+                    manager.AddOrUpdateSorting("nickName");
                 }
                 else
                 {
-                    CrossSettings.Current.AddOrUpdateValue("nickName", false);
+                    manager.AddOrUpdateSorting(string.Empty);
                 }
             }
         }
@@ -77,11 +71,11 @@ namespace ProfileBook.ViewModels
                 {
                     IsName = false;
                     IsNickName = false;
-                    CrossSettings.Current.AddOrUpdateValue("date", true);
+                    manager.AddOrUpdateSorting("date");
                 }
                 else
                 {
-                    CrossSettings.Current.AddOrUpdateValue("date", false);
+                    manager.AddOrUpdateSorting(string.Empty);
                 }
             }
         }
@@ -93,31 +87,7 @@ namespace ProfileBook.ViewModels
             set
             {
                 SetProperty(ref _isTheme, value);
-                manager.IsDarkTheme = _isTheme;
-                manager.ChangeTheme();
-                CrossSettings.Current.AddOrUpdateValue("theme", _isTheme);
-            }
-        }
-
-        private bool _isEnglish;
-        public bool IsEnglish
-        {
-            get => _isEnglish;
-            set
-            {
-                SetProperty(ref _isEnglish, value);
-                if (_isEnglish)
-                {
-                    IsRussian = false;
-                    manager.ChengeCulture("en");
-                    CrossSettings.Current.AddOrUpdateValue("eng", true);
-                    CrossSettings.Current.AddOrUpdateValue("rus", false);
-                }
-                else
-                {
-                    manager.ChengeCulture("en");
-                    CrossSettings.Current.AddOrUpdateValue("eng", false);
-                }
+                manager.AddOrUpdateTheme(_isTheme);
             }
         }
 
@@ -130,78 +100,63 @@ namespace ProfileBook.ViewModels
                 SetProperty(ref _isRussian, value);
                 if (_isRussian)
                 {
-                    IsEnglish = false;
-                    manager.ChengeCulture("ru");
-                    CrossSettings.Current.AddOrUpdateValue("rus", true);
-                    CrossSettings.Current.AddOrUpdateValue("eng", false);
+                    manager.AddOrUpdateCulture("ru");
                 }
                 else
-                {
-                    manager.ChengeCulture("en");
-                    CrossSettings.Current.AddOrUpdateValue("rus", false);
+                {                  
+                    manager.AddOrUpdateCulture("en");
                 }
+                manager.ApplyCulture();
             }
         }
 
-        private void SortByName()
+        private void ActivateSorting()
         {
-            if (_isName)
-                _profiles = manager.SortByName(repository, App.UserId);
+            string sortingName = manager.GetSortingName();
+
+            switch (sortingName)
+            {
+                case "name":
+                    IsName = true;
+                    break;
+                case "nickName":
+                    IsNickName = true;
+                    break;
+                case "date":
+                    IsDate = true;
+                    break;
+            }
         }
 
-        private void SortByNickName()
+        private void ActivateTheme()
         {
-            if (_isNickName)
-                _profiles = manager.SortByNickName(repository, App.UserId);
+            IsTheme = manager.GetThemeActive();
         }
 
-        private void SortByDate()
+        private void ActivateCulture()
         {
-            if (_isDate)
-                _profiles = manager.SortByDate(repository, App.UserId);
-        }
+            string cultureName = manager.GetCultureName();
 
-        private void GetWithoutSorting()
-        {
-            if (!_isName && !_isNickName && !_isDate)
-                _profiles = profileService.GetProfiles(repository, App.UserId);
+            switch (cultureName)
+            {
+                case "ru":
+                    IsRussian = true;
+                    break;
+            }
         }
 
         public ICommand GoToMainListCommand => new Command(GotoMainList);
 
         private async void GotoMainList()
         {
-            SortByName();
-            SortByNickName();
-            SortByDate();
-            GetWithoutSorting();
-
-            var parameters = new NavigationParameters();
-            parameters.Add("user", _user);
-            parameters.Add("profiles", _profiles);
-            await navigationService.NavigateAsync($"{nameof(MainListView)}", parameters);
+            await navigationService.GoBackAsync();
         }
 
         public override void Initialize(INavigationParameters parameters)
         {
-            IsName = CrossSettings.Current.GetValueOrDefault("name", false);
-            IsNickName = CrossSettings.Current.GetValueOrDefault("nickName", false);
-            IsDate = CrossSettings.Current.GetValueOrDefault("date", false);
-            IsEnglish = CrossSettings.Current.GetValueOrDefault("eng", false);
-            IsRussian = CrossSettings.Current.GetValueOrDefault("rus", false);
-            IsTheme = CrossSettings.Current.GetValueOrDefault("theme", false);
-
-            if (parameters.TryGetValue("user", out User user))
-            {
-                _user = user;
-            }
-            if (parameters.TryGetValue("profiles", out List<Profile> profiles))
-            {
-                if (profiles.Count > 0)
-                {
-                    _profiles = profiles;
-                }
-            }
+            ActivateSorting();
+            ActivateCulture();
+            ActivateTheme();
         }
     }
 }

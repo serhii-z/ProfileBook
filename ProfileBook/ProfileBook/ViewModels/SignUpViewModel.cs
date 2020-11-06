@@ -7,7 +7,6 @@ using ProfileBook.Servises.Profile;
 using ProfileBook.Servises.Repository;
 using ProfileBook.Servises.Settings;
 using ProfileBook.Validators;
-using ProfileBook.Views;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -15,7 +14,6 @@ namespace ProfileBook.ViewModels
 {
     public class SignUpViewModel : BaseViewModel
     {
-        private User _user;
         private IPageDialogService _pageDialog;
         public SignUpViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
@@ -88,13 +86,15 @@ namespace ProfileBook.ViewModels
             EnabledButton = false;
         }
 
-        private void CreateUser()
+        private User CreateUser()
         {
-            _user = new User()
+            var user = new User()
             {
                 Login = _entryLoginText,
                 Password = _entryPasswordText
             };
+
+            return user;
         }
 
         private void ClearEntries()
@@ -147,7 +147,7 @@ namespace ProfileBook.ViewModels
 
         public ICommand SignUpCommand => new Command(SaveUser);
 
-        private async void SaveUser()
+        private void SaveUser()
         {
             if (MakeValidation())
             {
@@ -160,18 +160,18 @@ namespace ProfileBook.ViewModels
                 }
                 else
                 {
-                    CreateUser();
-                    await authorization.SaveUser(repository, _user);
-                    GoToSignInView();
+                    var user = CreateUser();
+                    authorization.SaveUser(repository, user);
+                    GoToSignInView(user);
                 }
             }
         }
 
-        private async void GoToSignInView()
+        private async void GoToSignInView(User user)
         {
             var parameters = new NavigationParameters();
-            parameters.Add("login", _user.Login);
-            await navigationService.NavigateAsync($"{nameof(SignInView)}", parameters);
+            parameters.Add("login", user.Login);
+            await navigationService.GoBackAsync(parameters);
         }
     }
 }

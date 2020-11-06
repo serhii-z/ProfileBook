@@ -5,11 +5,16 @@ namespace ProfileBook.Servises.Settings
 {
     public interface ISettingsManager
     {
-        bool IsDarkTheme { get; set; }
-        void ChangeTheme();
+        void ApplyTheme(bool isDarkTheme);
         List<Models.Profile> SortByName(IRepository repository, int id);
         List<Models.Profile> SortByNickName(IRepository repository, int id);
         List<Models.Profile> SortByDate(IRepository repository, int id);
-        void ChengeCulture(string culture);
+        void ApplyCulture();
+        void AddOrUpdateCulture(string culture);
+        void AddOrUpdateSorting(string sortingName);
+        void AddOrUpdateTheme(bool isTheme);
+        string GetSortingName();
+        string GetCultureName();
+        bool GetThemeActive();
     }
 }

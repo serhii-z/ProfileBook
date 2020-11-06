@@ -1,6 +1,5 @@
 ﻿using Prism.Navigation;
 using Prism.Services;
-using ProfileBook.Models;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
 using ProfileBook.Servises.Profile;
@@ -8,7 +7,6 @@ using ProfileBook.Servises.Repository;
 using ProfileBook.Servises.Settings;
 using ProfileBook.Validators;
 using ProfileBook.Views;
-using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -16,8 +14,6 @@ namespace ProfileBook.ViewModels
 {
     public class SignInViewModel : BaseViewModel
     {
-        private User _user;
-        private List<Profile> _profiles;
         private IPageDialogService _pageDialog;
 
         public SignInViewModel(INavigationService navigationService, IRepository repository, 
@@ -88,17 +84,16 @@ namespace ProfileBook.ViewModels
 
         private void VerifyUser()
         {
-            _user = authentication.FindUser(repository, _entryLoginText, _entryPasswordText);
-            MakeAuthorization();
+            var userId = authentication.FindUser(repository, _entryLoginText, _entryPasswordText);
+            MakeAuthorization(userId);
         }
 
-        private async void MakeAuthorization()
+        private async void MakeAuthorization(int userId)
         {
-            if (_user != null)
+            if (userId > 0)
             {
-                authorization.ExecuteAutorization(_user.Id);
-                _profiles = profileService.GetProfiles(repository, _user.Id);
-                GoToMainListView();
+                authorization.ExecuteAutorization(userId);
+                GoToMainListView(userId);
             }
             else
             {
@@ -108,22 +103,23 @@ namespace ProfileBook.ViewModels
             }
         }
 
-        private async void GoToMainListView()
+        private async void GoToMainListView(int id)
         {
-            var parameters = new NavigationParameters();
-            parameters.Add("user", _user);
-            parameters.Add("profiles", _profiles);
-            await navigationService.NavigateAsync($"{nameof(MainListView)}", parameters);
+            await navigationService.NavigateAsync($"{nameof(MainListView)}");
         }
 
-        public override void Initialize(INavigationParameters parameters)
+        public override void OnNavigatedTo(INavigationParameters parameters)
         {
-            manager.ChangeTheme();
-
             if (parameters.TryGetValue("login", out string login))
             {
                 EntryLoginText = login;
             }
+        }
+
+        public override void Initialize(INavigationParameters parameters)
+        {
+            var isDark = manager.GetThemeActive();
+            manager.ApplyTheme(isDark);
         }
     }
 }

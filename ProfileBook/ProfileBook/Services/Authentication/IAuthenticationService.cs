@@ -5,7 +5,7 @@ namespace ProfileBook.Servises.Authentication
 {
     public interface IAuthenticationService
     {
-        User FindUser(IRepository repository, string login, string password);
+        int FindUser(IRepository repository, string login, string password);
         bool CheckLogin(IRepository repository, string login);
     }
 }

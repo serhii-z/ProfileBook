@@ -1,7 +1,6 @@
-﻿using Prism.Services;
+﻿using Plugin.Settings;
 using ProfileBook.Models;
 using ProfileBook.Servises.Repository;
-using System.Threading.Tasks;
 
 namespace ProfileBook.Servises.Authorization
 {
@@ -9,22 +8,22 @@ namespace ProfileBook.Servises.Authorization
     {
         public User GetUser(IRepository repository, int id)
         {
-            var user = repository.GetItem<User>(id).Result;
-            if (user != null)
-            {
-                return user;
-            }
-            return null;
+            return repository.GetItem<User>(id).Result;
         }
 
-        public async Task<int> SaveUser(IRepository repository, User user)
+        public int SaveUser(IRepository repository, User user)
         {
-            return await repository.SaveItem(user);
+            return repository.SaveItem(user).Result;
         }
 
         public void ExecuteAutorization(int id)
         {
-            App.UserId = id;
+            CrossSettings.Current.AddOrUpdateValue("id", id);
+        }
+
+        public int GetAutorization()
+        {
+            return CrossSettings.Current.GetValueOrDefault("id", 0);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace ProfileBook.Validators
 {
@@ -7,9 +6,9 @@ namespace ProfileBook.Validators
     {
         public bool CheckFirstSimbol(string item)
         {
-            var simbol = item.Take(1).ToList();
+            var hasNumber = new Regex(@"^[0-9]");
 
-            if (char.IsDigit(simbol[0]))
+            if (hasNumber.IsMatch(item))
             {
                 return false;
             }

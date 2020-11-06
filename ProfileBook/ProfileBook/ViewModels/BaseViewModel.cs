@@ -9,7 +9,7 @@ using ProfileBook.Validators;
 
 namespace ProfileBook.ViewModels
 {
-    public class BaseViewModel : BindableBase, IInitialize
+    public class BaseViewModel : BindableBase, IInitialize, INavigatedAware
     {
         protected readonly INavigationService navigationService;
         protected readonly IRepository repository;
@@ -21,7 +21,8 @@ namespace ProfileBook.ViewModels
 
         public BaseViewModel(INavigationService navigationService, IRepository repository,
             ISettingsManager manager, IAuthorizationService authorization,
-            IAuthenticationService authentication, IValidator validator, IProfileService profileService)
+            IAuthenticationService authentication, IValidator validator, 
+            IProfileService profileService)
         {
             this.navigationService = navigationService;
             this.repository = repository;
@@ -33,6 +34,16 @@ namespace ProfileBook.ViewModels
         }
 
         public virtual void Initialize(INavigationParameters parameters)
+        {
+
+        }
+
+        public virtual void OnNavigatedFrom(INavigationParameters parameters)
+        {
+
+        }
+
+        public virtual void OnNavigatedTo(INavigationParameters parameters)
         {
 
         }

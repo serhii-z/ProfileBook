@@ -5,14 +5,18 @@
              BackgroundColor="Transparent">
 
     <FlexLayout Direction="Row">
+        
         <FlexLayout FlexLayout.Grow="1"/>
+        
         <FlexLayout FlexLayout.Grow="5" AlignItems="Center">
             <FlexLayout.GestureRecognizers>
                 <TapGestureRecognizer  Command="{Binding GoBackCommand}" />
             </FlexLayout.GestureRecognizers>
             <Image Source="{Binding PictureSource}" FlexLayout.Grow="1"/>
         </FlexLayout>
+        
         <FlexLayout FlexLayout.Grow="1"/>
+        
     </FlexLayout>
 
 </ContentPage>

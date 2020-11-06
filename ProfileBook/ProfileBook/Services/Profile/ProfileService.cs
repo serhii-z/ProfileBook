@@ -5,14 +5,14 @@ namespace ProfileBook.Servises.Profile
 {
     public class ProfileService : IProfileService
     {
-        public void SaveProfile(IRepository repository, Models.Profile profile)
+        public int SaveProfile(IRepository repository, Models.Profile profile)
         {
-            repository.SaveItem(profile);
+            return repository.SaveItem(profile).Result;
         }
 
-        public void UpdateProfile(IRepository repository, Models.Profile profile)
+        public int UpdateProfile(IRepository repository, Models.Profile profile)
         {
-            repository.UpdateItem(profile);
+            return repository.UpdateItem(profile).Result;
         }
 
         public List<Models.Profile> GetProfiles(IRepository repository, int userId)

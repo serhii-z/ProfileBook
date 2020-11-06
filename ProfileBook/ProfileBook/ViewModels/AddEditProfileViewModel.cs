@@ -10,10 +10,7 @@ using ProfileBook.Servises.Profile;
 using ProfileBook.Servises.Repository;
 using ProfileBook.Servises.Settings;
 using ProfileBook.Validators;
-using ProfileBook.Views;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -21,15 +18,13 @@ namespace ProfileBook.ViewModels
 {
     public class AddEditProfileViewModel : BaseViewModel
     {
-        private User _user;
-        private string _path;
         private Profile _profile;
-        private List<Profile> _profiles;
         private IPageDialogService _pageDialog;
 
         public AddEditProfileViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
-            IAuthenticationService authentication, IValidator validator, IProfileService profileService, IPageDialogService pageDialog) :
+            IAuthenticationService authentication, IValidator validator, 
+            IProfileService profileService, IPageDialogService pageDialog) :
             base(navigationService, repository, manager, authorization, authentication, validator, profileService)
         {
             _pageDialog = pageDialog;
@@ -38,11 +33,7 @@ namespace ProfileBook.ViewModels
         private ImageSource _pictupeSource = "profile.png";
         public ImageSource PictureSource
         {
-            get
-            {
-                ExtractPath();
-                return _pictupeSource;
-            }
+            get => _pictupeSource;
             set => SetProperty(ref _pictupeSource, value);
         }
 
@@ -67,28 +58,33 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _editorText, value);
         }
 
-        private void ExtractPath()
+        private string ExtractPath()
         {
             var str = _pictupeSource.ToString();
-            _path = str.Substring(6);
+            var path = str.Substring(6);
+            return path;
         }
 
         private void CreateProfile()
         {
+            var userId = authorization.GetAutorization();
+            var path = ExtractPath();
+
             _profile = new Profile()
             {
-                ImagePath = _path,
+                ImagePath = path,
                 NickName = _entryNickNameText,
                 Name = _entryNameText,
                 Description = _editorText,
                 StartDate = DateTime.Now,
-                UserId = _user.Id
+                UserId = userId
             };
         }
 
         private void UpdateProfile()
         {
-            _profile.ImagePath = _path;
+            var path = ExtractPath();
+            _profile.ImagePath = path;
             _profile.NickName = _entryNickNameText;
             _profile.Name = _entryNameText;
             _profile.Description = _editorText;
@@ -117,7 +113,6 @@ namespace ProfileBook.ViewModels
                                GetPathCamera();
                            }, "camera.png")
                        );
-
         }
 
         private async void GetPathGalary()
@@ -130,8 +125,8 @@ namespace ProfileBook.ViewModels
                     {
                         CompressionQuality = 40,
                         CustomPhotoSize = 35,
-                        PhotoSize = PhotoSize.MaxWidthHeight,
-                        MaxWidthHeight = 2000
+                        MaxWidthHeight = 200,
+                        PhotoSize = PhotoSize.MaxWidthHeight         
                     });
                     PictureSource = ImageSource.FromFile(photo.Path);
                 }
@@ -149,15 +144,16 @@ namespace ProfileBook.ViewModels
                     Directory = "Sample",
                     CompressionQuality = 40,
                     CustomPhotoSize = 35,
-                    PhotoSize = PhotoSize.MaxWidthHeight,
-                    MaxWidthHeight = 2000,
+                    MaxWidthHeight = 200,
+                    PhotoSize = PhotoSize.MaxWidthHeight,                   
                     DefaultCamera = CameraDevice.Rear,
                     Name = $"{DateTime.Now.ToString("dd/MM/yyyy_hh/mm/ss")}.jpg"
                 });
 
                 if (file == null)
                 {
-                    await _pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, Properties.Resource.AddEditAlert, "OK");
+                    await _pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, 
+                        Properties.Resource.AddEditAlert, "OK");
                 }
                 else
                 {
@@ -178,7 +174,14 @@ namespace ProfileBook.ViewModels
             {
                 Update();
             }
+
             GoToMainListView();
+        }
+
+        private void Save()
+        {
+            CreateProfile();
+            profileService.SaveProfile(repository, _profile);
         }
 
         private void Update()
@@ -187,33 +190,14 @@ namespace ProfileBook.ViewModels
             profileService.UpdateProfile(repository, _profile);
         }
 
-        private void Save()
-        {
-            CreateProfile();
-            profileService.SaveProfile(repository, _profile);
-            if (_profiles.Count == 0)
-            {
-                _profiles = new List<Profile>();
-            }
-            _profiles.Add(_profile);
-        }
-
         private async void GoToMainListView()
         {
-            var parameters = new NavigationParameters();
-            parameters.Add("user", _user);
-            parameters.Add("profiles", _profiles);
-            if (!string.IsNullOrEmpty(_entryNickNameText) &&
-                !string.IsNullOrEmpty(_entryNameText))
-                await navigationService.NavigateAsync($"{nameof(MainListView)}", parameters);
+            if (!string.IsNullOrEmpty(_entryNickNameText) && !string.IsNullOrEmpty(_entryNameText))
+                await navigationService.GoBackAsync();
         }
 
         public override void Initialize(INavigationParameters parameters)
         {
-            if (parameters.TryGetValue("user", out User user))
-            {
-                _user = user;
-            }
             if (parameters.TryGetValue("profile", out Profile profile))
             {
                 _profile = profile;
@@ -221,10 +205,6 @@ namespace ProfileBook.ViewModels
                 {
                     ShowDataProfile();
                 }                 
-            }
-            if (parameters.TryGetValue("profiles", out List<Profile> profiles))
-            {
-                _profiles = profiles;
             }
         }
     }

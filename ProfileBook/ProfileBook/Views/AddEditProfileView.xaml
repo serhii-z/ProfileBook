@@ -39,7 +39,8 @@
                 <Entry Placeholder="{x:Static resource:Resource.AddNickNamePlaceholder}" 
                        Text="{Binding EntryNickNameText, Mode=TwoWay}"/>
                 <Entry Placeholder="{x:Static resource:Resource.AddNamePlaceholder}" 
-                       Text="{Binding EntryNameText, Mode=TwoWay}"/>
+                       Text="{Binding EntryNameText, Mode=TwoWay}"
+                       Margin="0,10,0,0" />
             </FlexLayout>
 
             <FlexLayout FlexLayout.Grow="1" 

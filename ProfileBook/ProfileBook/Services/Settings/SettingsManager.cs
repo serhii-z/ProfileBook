@@ -9,49 +9,74 @@ namespace ProfileBook.Servises.Settings
 {
     public class SettingsManager : ISettingsManager
     {
-        public bool IsDarkTheme { get; set; }
-        public string Language { get; set; }
-
-        public void ChangeTheme()
+        public void ApplyTheme(bool isDarkTheme)
         {
-            var r = App.Current.Resources;
-            r.Clear();
-            if (IsDarkTheme)
+            var resource = App.Current.Resources;
+            resource.Clear();
+
+            if (isDarkTheme)
             {
-                r.Add(new darkTheme());
+                resource.Add(new darkTheme());
             }
             else
             {
-                r.Add(new lightTheme());
+                resource.Add(new lightTheme());
             }
         }
 
         public List<Models.Profile> SortByName(IRepository repository, int id)
         {
             string sql = $"SELECT * FROM Profiles  WHERE UserId='{id}' ORDER BY Name";
-            var result = repository.GetListItems<Models.Profile>(sql);
-            return result.Result;
+            return repository.GetListItems<Models.Profile>(sql).Result;
         }
 
         public List<Models.Profile> SortByNickName(IRepository repository, int id)
         {
             string sql = $"SELECT * FROM Profiles  WHERE UserId='{id}' ORDER BY NickName";
-            var result = repository.GetListItems<Models.Profile>(sql);
-            return result.Result;
+            return repository.GetListItems<Models.Profile>(sql).Result;
         }
 
         public List<Models.Profile> SortByDate(IRepository repository, int id)
         {
             string sql = $"SELECT * FROM Profiles  WHERE UserId='{id}' ORDER BY StartDate";
-            var result = repository.GetListItems<Models.Profile>(sql);
-            return result.Result;
+            return repository.GetListItems<Models.Profile>(sql).Result;
         }
 
-        public void ChengeCulture(string culture)
+        public void ApplyCulture()
         {
+            string culture = CrossSettings.Current.GetValueOrDefault("culture", "en");
             CultureInfo myCIintl = new CultureInfo(culture, false);
             Resource.Culture = myCIintl;
+        }
+
+        public void AddOrUpdateCulture(string culture)
+        {
             CrossSettings.Current.AddOrUpdateValue("culture", culture);
+        }
+
+        public void AddOrUpdateSorting(string sortingName)
+        {
+            CrossSettings.Current.AddOrUpdateValue("sort", sortingName);
+        }
+
+        public void AddOrUpdateTheme(bool isTheme)
+        {
+            CrossSettings.Current.AddOrUpdateValue("theme", isTheme);
+        }
+
+        public string GetSortingName()
+        {
+            return CrossSettings.Current.GetValueOrDefault("sort", string.Empty);
+        }
+
+        public string GetCultureName()
+        {
+            return CrossSettings.Current.GetValueOrDefault("culture", "en");
+        }
+
+        public bool GetThemeActive()
+        {
+            return CrossSettings.Current.GetValueOrDefault("theme", false);
         }
     }
 }
