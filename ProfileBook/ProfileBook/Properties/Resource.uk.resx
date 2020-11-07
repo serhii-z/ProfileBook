@@ -118,111 +118,111 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddDescription" xml:space="preserve">
-    <value>Description</value>
+    <value>Опис</value>
   </data>
   <data name="AddEditAlert" xml:space="preserve">
-    <value>Your device does not support this feature.</value>
+    <value>Ваш пристрій не підтримує цю функцію.</value>
   </data>
   <data name="AddNamePlaceholder" xml:space="preserve">
-    <value>Name</value>
+    <value>Ім'я</value>
   </data>
   <data name="AddNickNamePlaceholder" xml:space="preserve">
-    <value>NickName</value>
+    <value>Нік</value>
   </data>
   <data name="AddTitle" xml:space="preserve">
-    <value>Add Profile</value>
+    <value>Додати профіль</value>
   </data>
   <data name="AlertTitle" xml:space="preserve">
-    <value>Message</value>
+    <value>Повідомлення</value>
   </data>
   <data name="AuthorizationAlert" xml:space="preserve">
-    <value>This login is already token.</value>
+    <value>Цей логін вже є зайнятий.</value>
   </data>
   <data name="MainListAlertDelete" xml:space="preserve">
-    <value>Do you really want delete profile?</value>
+    <value>Ви дійсно хочете видалити профіль?</value>
   </data>
   <data name="MainListAlertDeleteNo" xml:space="preserve">
-    <value>No</value>
+    <value>Ні</value>
   </data>
   <data name="MainListAlertDeleteYes" xml:space="preserve">
-    <value>Yes</value>
+    <value>Так</value>
   </data>
   <data name="MainListLabelText" xml:space="preserve">
-    <value>No profiles added.</value>
+    <value>Профіль не додано.</value>
   </data>
   <data name="MainListTitle" xml:space="preserve">
-    <value>Main List</value>
+    <value>Основний список</value>
   </data>
   <data name="SettingsButtonText" xml:space="preserve">
-    <value>GOBACK</value>
+    <value>ПОВЕРНУТИСЯ</value>
   </data>
   <data name="SettingsLabelDate" xml:space="preserve">
-    <value>Sort by date</value>
+    <value>Сортувати за датою</value>
   </data>
   <data name="SettingsLabelName" xml:space="preserve">
-    <value>Sort by name</value>
+    <value>Сортувати по імені</value>
   </data>
   <data name="SettingsLabelNickName" xml:space="preserve">
-    <value>Sort by nick name</value>
+    <value>Сортувати за ніком</value>
   </data>
   <data name="SettingsLabelRussian" xml:space="preserve">
-    <value>Activate Russian</value>
+    <value>Активувати російську</value>
   </data>
   <data name="SettingsLabelTheme" xml:space="preserve">
-    <value>Activate dark theme</value>
+    <value>Активувати темну тему</value>
   </data>
   <data name="SettingsLabelUkrainian" xml:space="preserve">
-    <value>Activate Ukrainian</value>
+    <value>Активувати українську</value>
   </data>
   <data name="SettingsTitle" xml:space="preserve">
-    <value>Settings View</value>
+    <value>Перегляд налаштувань</value>
   </data>
   <data name="SignInAlert" xml:space="preserve">
-    <value>Invalid login or password.</value>
+    <value>Недійсний логін або пароль.</value>
   </data>
   <data name="SignInButtonText" xml:space="preserve">
-    <value>SIGN IN</value>
+    <value>УВІЙТИ</value>
   </data>
   <data name="SignInLabelText" xml:space="preserve">
-    <value>SIGN UP</value>
+    <value>РЕЄСТРАЦІЯ</value>
   </data>
   <data name="SignInLoginPlaceholder" xml:space="preserve">
-    <value>Login</value>
+    <value>Логін</value>
   </data>
   <data name="SignInPasswordPlaceholder" xml:space="preserve">
-    <value>Password</value>
+    <value>Пароль</value>
   </data>
   <data name="SignInTitle" xml:space="preserve">
-    <value>Users Signin</value>
+    <value>Вхід користувачів</value>
   </data>
   <data name="SignUpButtonText" xml:space="preserve">
-    <value>SIGN UP</value>
+    <value>ЗАРЕЄСТРУВАТИСЯ</value>
   </data>
   <data name="SignUpConfirmPasswordPlaceholder" xml:space="preserve">
-    <value>Confirm Password</value>
+    <value>Підтвердьте пароль</value>
   </data>
   <data name="SignUpLoginPlaceholder" xml:space="preserve">
-    <value>Login</value>
+    <value>Логін</value>
   </data>
   <data name="SignUpPasswordPlaceholder" xml:space="preserve">
-    <value>Password</value>
+    <value>Пароль</value>
   </data>
   <data name="SignUpTitle" xml:space="preserve">
-    <value>Users Signup</value>
+    <value>Реєстрація користувачів</value>
   </data>
   <data name="ValidatorFirst" xml:space="preserve">
-    <value>First simbol must not digit in login.</value>
+    <value>Перший символ не повинен бути цифрою в логіні.</value>
   </data>
   <data name="ValidatorMust" xml:space="preserve">
-    <value>Must be a number, uppercase or lowercase letter.</value>
+    <value>Повинно бути число, буква в верхньому або нижньому регістрі.</value>
   </data>
   <data name="ValidatorNumberLogin" xml:space="preserve">
-    <value>Number of characters less than 4 or more than 16.</value>
+    <value>Кількість символів менше 4 або більше 16.</value>
   </data>
   <data name="ValidatorNumberPassword" xml:space="preserve">
-    <value>Number of characters less than 8 or more than 16.</value>
+    <value>Кількість символів менше 8 або більше 16.</value>
   </data>
   <data name="ValidatorPassword" xml:space="preserve">
-    <value>Password and confirm password are not equal.</value>
+    <value>Пароль і пароль підтвердження не однакові.</value>
   </data>
 </root>

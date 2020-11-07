@@ -91,6 +91,26 @@ namespace ProfileBook.ViewModels
             }
         }
 
+        private bool _isUkrainian;
+        public bool IsUkrainian
+        {
+            get => _isUkrainian;
+            set
+            {
+                SetProperty(ref _isUkrainian, value);
+                if (_isUkrainian)
+                {
+                    IsRussian = false;
+                    manager.AddOrUpdateCulture("uk");
+                }
+                else
+                {
+                    manager.AddOrUpdateCulture("en");
+                }
+                manager.ApplyCulture();
+            }
+        }
+
         private bool _isRussian;
         public bool IsRussian
         {
@@ -100,6 +120,7 @@ namespace ProfileBook.ViewModels
                 SetProperty(ref _isRussian, value);
                 if (_isRussian)
                 {
+                    IsUkrainian = false;
                     manager.AddOrUpdateCulture("ru");
                 }
                 else
@@ -139,6 +160,9 @@ namespace ProfileBook.ViewModels
 
             switch (cultureName)
             {
+                case "uk":
+                    IsUkrainian = true;
+                    break;
                 case "ru":
                     IsRussian = true;
                     break;

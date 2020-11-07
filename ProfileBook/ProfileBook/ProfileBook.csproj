@@ -37,6 +37,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resource.ru.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\Resource.uk.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.uk.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +52,10 @@
     <EmbeddedResource Update="Properties\Resource.ru.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.ru.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resource.uk.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.uk.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\Themes\darkTheme.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>

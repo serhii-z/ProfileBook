@@ -187,15 +187,6 @@ namespace ProfileBook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Activate English.
-        /// </summary>
-        internal static string SettingsLabelEnglish {
-            get {
-                return ResourceManager.GetString("SettingsLabelEnglish", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Sort by name.
         /// </summary>
         internal static string SettingsLabelName {
@@ -228,6 +219,15 @@ namespace ProfileBook.Properties {
         internal static string SettingsLabelTheme {
             get {
                 return ResourceManager.GetString("SettingsLabelTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activate Ukrainian.
+        /// </summary>
+        internal static string SettingsLabelUkrainian {
+            get {
+                return ResourceManager.GetString("SettingsLabelUkrainian", resourceCulture);
             }
         }
         
@@ -349,7 +349,7 @@ namespace ProfileBook.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Must be a number, upper case, lower case..
+        ///   Looks up a localized string similar to Must be a number, uppercase or lowercase letter..
         /// </summary>
         internal static string ValidatorMust {
             get {

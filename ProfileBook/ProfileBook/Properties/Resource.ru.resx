@@ -136,7 +136,7 @@
     <value>Сообщение</value>
   </data>
   <data name="AuthorizationAlert" xml:space="preserve">
-    <value>Этот логин уже является токеном.</value>
+    <value>Этот логин уже используется.</value>
   </data>
   <data name="MainListAlertDelete" xml:space="preserve">
     <value>34/5000
@@ -160,9 +160,6 @@
   <data name="SettingsLabelDate" xml:space="preserve">
     <value>Сортировать по дате</value>
   </data>
-  <data name="SettingsLabelEnglish" xml:space="preserve">
-    <value>Активировать английский язык</value>
-  </data>
   <data name="SettingsLabelName" xml:space="preserve">
     <value>Сортировать по имени</value>
   </data>
@@ -174,6 +171,9 @@
   </data>
   <data name="SettingsLabelTheme" xml:space="preserve">
     <value>Активировать темную тему</value>
+  </data>
+  <data name="SettingsLabelUkrainian" xml:space="preserve">
+    <value>Активировать украинский язык</value>
   </data>
   <data name="SettingsTitle" xml:space="preserve">
     <value>Настройки</value>
@@ -197,7 +197,7 @@
     <value>Вход пользователей</value>
   </data>
   <data name="SignUpButtonText" xml:space="preserve">
-    <value>Зарегистрироваться</value>
+    <value>ЗАРЕГИСТРИРОВАТЬСЯ</value>
   </data>
   <data name="SignUpConfirmPasswordPlaceholder" xml:space="preserve">
     <value>Подтвердить Пароль</value>
@@ -215,7 +215,7 @@
     <value>Первый символ не должен быть цифрой в логине.</value>
   </data>
   <data name="ValidatorMust" xml:space="preserve">
-    <value>Должен быть числом, в верхнем или нижнем регистре.</value>
+    <value>Должно быть число, буква в верхнем или нижнем регистре.</value>
   </data>
   <data name="ValidatorNumberLogin" xml:space="preserve">
     <value>Количество символов меньше чем 4 или более 16.</value>
