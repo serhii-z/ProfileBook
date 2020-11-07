@@ -106,25 +106,25 @@ namespace ProfileBook.ViewModels
 
         private bool MakeValidation()
         {
-            if (!validator.CheckSimbolsQuantity(_entryLoginText, 4))
+            if (!validator.CheckQuantity(_entryLoginText, 4))
             {
                 ShowAlert(Properties.Resource.ValidatorNumberLogin);
                 ClearEntries();
                 return false;
             }
-            if (!validator.CheckFirstSimbol(_entryLoginText))
+            if (validator.CheckIfFirstDigit(_entryLoginText))
             {
                 ShowAlert(Properties.Resource.ValidatorFirst);
                 ClearEntries();
                 return false;
             }
-            if (!validator.CheckSimbolsQuantity(_entryPasswordText, 8))
+            if (!validator.CheckQuantity(_entryPasswordText, 8))
             {
                 ShowAlert(Properties.Resource.ValidatorNumberPassword);
                 ClearEntries();
                 return false;
             }
-            if (!validator.CheckSimbols(_entryPasswordText))
+            if (!validator.CheckAvailability(_entryPasswordText))
             {
                 ShowAlert(Properties.Resource.ValidatorMust);
                 ClearEntries();
@@ -171,6 +171,7 @@ namespace ProfileBook.ViewModels
         {
             var parameters = new NavigationParameters();
             parameters.Add("login", user.Login);
+
             await navigationService.GoBackAsync(parameters);
         }
     }

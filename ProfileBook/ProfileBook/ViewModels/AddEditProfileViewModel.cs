@@ -201,6 +201,7 @@ namespace ProfileBook.ViewModels
             if (parameters.TryGetValue("profile", out Profile profile))
             {
                 _profile = profile;
+
                 if(_profile != null)
                 {
                     ShowDataProfile();

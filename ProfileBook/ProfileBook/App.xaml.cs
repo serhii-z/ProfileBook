@@ -59,9 +59,9 @@ namespace ProfileBook
 
         protected override void OnInitialized()
         {
-            var userId = CrossSettings.Current.GetValueOrDefault("id", 0);
-
             Container.Resolve<SettingsManager>().ApplyCulture();
+
+            var userId = CrossSettings.Current.GetValueOrDefault("id", 0);
 
             GoToView(userId);
         }

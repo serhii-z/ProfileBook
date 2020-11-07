@@ -56,16 +56,17 @@ namespace ProfileBook.ViewModels
                 SetProperty(ref _selectedItem, value);
                 if (_selectedItem == value)
                 {
-                    ShowFromSelectedItem();
+                    GoToModalView();
                 }
             }
         }
 
-        private async void ShowFromSelectedItem()
+        private async void GoToModalView()
         {
             var item = _selectedItem as Profile;
             var parameters = new NavigationParameters();
             parameters.Add("profile", item);
+
             await navigationService.NavigateAsync($"{nameof(ModalView)}", parameters, useModalNavigation: true);
         }
 
@@ -130,10 +131,12 @@ namespace ProfileBook.ViewModels
             {
                 var profile = ob as Profile;
                 var answer = profileService.DeleteProfile(repository, profile);
+
                 if (answer == 1)
                 {
                     Items.Remove(profile);                   
                 }
+
                 IsNoProfiles = Items.Count > 0 ? false : true;
             }
         }
@@ -166,6 +169,7 @@ namespace ProfileBook.ViewModels
             var profile = ob as Profile;
             var parameters = new NavigationParameters();
             parameters.Add("profile", profile);
+
             await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}", parameters);
         }
 
