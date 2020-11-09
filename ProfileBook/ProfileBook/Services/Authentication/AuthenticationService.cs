@@ -8,11 +8,11 @@ namespace ProfileBook.Servises.Authentication
         public int FindUser(IRepository repository, string login, string password)
         {
             string sql = $"SELECT * FROM Users WHERE Login='{login}' AND Password='{password}'";
-            var list = repository.GetListItems<User>(sql).Result;
+            var user = repository.FindItem<User>(sql).Result;
 
-            if(list.Count > 0)
+            if(user != null)
             {
-                return list[0].Id;
+                return user.Id;
             }
 
             return 0;

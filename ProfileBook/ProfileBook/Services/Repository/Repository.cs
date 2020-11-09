@@ -1,5 +1,4 @@
-﻿using ProfileBook.Models;
-using SQLite;
+﻿using SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,9 +28,14 @@ namespace ProfileBook.Servises.Repository
             return await _database.UpdateAsync(item).ConfigureAwait(false);
         }
 
-        public async Task<int> DeleteItemAsync<T>(T item)
+        public async Task<int> DeleteItem<T>(T item)
         {
             return await _database.DeleteAsync(item).ConfigureAwait(false);
+        }
+
+        public async Task<T> FindItem<T>(string sql) where T : new()
+        {
+            return await _database.FindWithQueryAsync<T>(sql).ConfigureAwait(false);
         }
 
         public async Task<List<T>> GetListItems<T>(string sql) where T : new()

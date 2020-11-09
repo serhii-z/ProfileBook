@@ -70,7 +70,7 @@ namespace ProfileBook.Servises.Profile
 
         public int DeleteProfile(IRepository repository, Models.Profile profile)
         {
-            return repository.DeleteItemAsync(profile).Result;
+            return repository.DeleteItem(profile).Result;
         }
 
         public List<Models.Profile> GetProfiles(IRepository repository, int userId)
