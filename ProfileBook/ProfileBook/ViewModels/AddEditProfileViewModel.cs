@@ -56,8 +56,8 @@ namespace ProfileBook.ViewModels
 
         private string ExtractPath()
         {
-            var str = _pictupeSource.ToString();
-            var path = str.Substring(6);
+            var path = _pictupeSource.ToString();
+            path = path.Substring(6);
             return path;
         }
 
@@ -99,20 +99,20 @@ namespace ProfileBook.ViewModels
         public void ReplacePicture()
         {
             UserDialogs.Instance.ActionSheet(new ActionSheetConfig()
-                           .SetTitle(Properties.Resource.AddEditDialog)
-                           .Add(Properties.Resource.AddEditGalery, () =>
-                           {
-                               ReplaceFromGalary();
-                           })
-                           .Add(Properties.Resource.AddEditCamera, () =>
-                           {
-                               ReplaceFromCamera();
-                           })
-                           .Add(Properties.Resource.AddEditDelete, () => 
-                           {
-                               PictureSource = "profile.png";
-                           })
-                       );
+                        .SetTitle(Properties.Resource.AddEditDialog)
+                        .Add(Properties.Resource.AddEditGalery, () =>
+                        {
+                            ReplaceFromGalary();
+                        })
+                        .Add(Properties.Resource.AddEditCamera, () =>
+                        {
+                            ReplaceFromCamera();
+                        })
+                        .Add(Properties.Resource.AddEditDelete, () => 
+                        {
+                            PictureSource = "profile.png";
+                        })
+                    );
         }
 
         private async void ReplaceFromGalary()

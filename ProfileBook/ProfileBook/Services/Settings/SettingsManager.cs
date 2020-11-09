@@ -45,7 +45,7 @@ namespace ProfileBook.Servises.Settings
 
         public void ApplyCulture()
         {
-            string culture = CrossSettings.Current.GetValueOrDefault("culture", string.Empty);
+            var culture = CrossSettings.Current.GetValueOrDefault("culture", string.Empty);
 
             if (culture.Equals(string.Empty))
             {
@@ -78,12 +78,12 @@ namespace ProfileBook.Servises.Settings
 
         public string GetThemeName()
         {
-            return CrossSettings.Current.GetValueOrDefault("theme", "light");
+            return CrossSettings.Current.GetValueOrDefault("theme", string.Empty);
         }
 
         public string GetCultureName()
         {
-            return CrossSettings.Current.GetValueOrDefault("culture", "en");
+            return CrossSettings.Current.GetValueOrDefault("culture", string.Empty);
         }
     }
 }
