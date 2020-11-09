@@ -123,6 +123,18 @@
   <data name="AddEditAlert" xml:space="preserve">
     <value>Ваше устройство не поддерживает эту функцию.</value>
   </data>
+  <data name="AddEditCamera" xml:space="preserve">
+    <value>Сделать фото камерой</value>
+  </data>
+  <data name="AddEditDelete" xml:space="preserve">
+    <value>Удалить картинку</value>
+  </data>
+  <data name="AddEditDialog" xml:space="preserve">
+    <value>Диалог</value>
+  </data>
+  <data name="AddEditGalery" xml:space="preserve">
+    <value>Выбрать в галерее</value>
+  </data>
   <data name="AddNamePlaceholder" xml:space="preserve">
     <value>Имя</value>
   </data>

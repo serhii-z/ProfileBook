@@ -123,6 +123,18 @@
   <data name="AddEditAlert" xml:space="preserve">
     <value>Your device does not support this feature.</value>
   </data>
+  <data name="AddEditCamera" xml:space="preserve">
+    <value>Take a photo with the camera</value>
+  </data>
+  <data name="AddEditDelete" xml:space="preserve">
+    <value>Delete picture</value>
+  </data>
+  <data name="AddEditDialog" xml:space="preserve">
+    <value>Dialog</value>
+  </data>
+  <data name="AddEditGalery" xml:space="preserve">
+    <value>Pick at Galery</value>
+  </data>
   <data name="AddNamePlaceholder" xml:space="preserve">
     <value>Name</value>
   </data>

@@ -79,6 +79,42 @@ namespace ProfileBook.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Take a photo with the camera.
+        /// </summary>
+        internal static string AddEditCamera {
+            get {
+                return ResourceManager.GetString("AddEditCamera", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete picture.
+        /// </summary>
+        internal static string AddEditDelete {
+            get {
+                return ResourceManager.GetString("AddEditDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dialog.
+        /// </summary>
+        internal static string AddEditDialog {
+            get {
+                return ResourceManager.GetString("AddEditDialog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick at Galery.
+        /// </summary>
+        internal static string AddEditGalery {
+            get {
+                return ResourceManager.GetString("AddEditGalery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         internal static string AddNamePlaceholder {

@@ -99,16 +99,16 @@ namespace ProfileBook.ViewModels
         public void ReplacePicture()
         {
             UserDialogs.Instance.ActionSheet(new ActionSheetConfig()
-                           .SetTitle("Dialog")
-                           .Add("Pick at Galery", () =>
+                           .SetTitle(Properties.Resource.AddEditDialog)
+                           .Add(Properties.Resource.AddEditGalery, () =>
                            {
                                ReplaceFromGalary();
                            })
-                           .Add("Take photo with camera", () =>
+                           .Add(Properties.Resource.AddEditCamera, () =>
                            {
                                ReplaceFromCamera();
                            })
-                           .Add("Delete picture", () => 
+                           .Add(Properties.Resource.AddEditDelete, () => 
                            {
                                PictureSource = "profile.png";
                            })
