@@ -14,14 +14,12 @@ namespace ProfileBook.ViewModels
 {
     public class SignUpViewModel : BaseViewModel
     {
-        private IPageDialogService _pageDialog;
         public SignUpViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
             IAuthenticationService authentication, IValidator validator, 
             IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService)
+            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
         {
-            _pageDialog = pageDialog;
         }
 
         private string _entryLoginText;
@@ -142,7 +140,7 @@ namespace ProfileBook.ViewModels
 
         private async void ShowAlert(string message)
         {
-            await _pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, message, "OK");
+            await pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, message, "OK");
         }
 
         public ICommand SignUpCommand => new Command(SaveUser);

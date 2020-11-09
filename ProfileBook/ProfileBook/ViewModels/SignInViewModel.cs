@@ -14,16 +14,12 @@ namespace ProfileBook.ViewModels
 {
     public class SignInViewModel : BaseViewModel
     {
-        private IPageDialogService _pageDialog;
-
         public SignInViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
             IAuthenticationService authentication, IValidator validator, 
             IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService)
+            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
         {
-            EnabledButton = false;
-            _pageDialog = pageDialog;
         }
 
         private string _entryLoginText;
@@ -103,7 +99,7 @@ namespace ProfileBook.ViewModels
             }
             else
             {
-                await _pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, Properties.Resource.SignInAlert, "OK");
+                await pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, Properties.Resource.SignInAlert, "OK");
                 EntryLoginText = string.Empty;
                 EntryPasswordText = string.Empty;
             }

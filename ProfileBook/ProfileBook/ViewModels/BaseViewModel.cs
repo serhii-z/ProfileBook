@@ -1,5 +1,6 @@
 ﻿using Prism.Mvvm;
 using Prism.Navigation;
+using Prism.Services;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
 using ProfileBook.Servises.Profile;
@@ -18,11 +19,12 @@ namespace ProfileBook.ViewModels
         protected readonly IAuthenticationService authentication;
         protected readonly IValidator validator;
         protected readonly IProfileService profileService;
+        protected readonly IPageDialogService pageDialog;
 
         public BaseViewModel(INavigationService navigationService, IRepository repository,
             ISettingsManager manager, IAuthorizationService authorization,
             IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService)
+            IProfileService profileService, IPageDialogService pageDialog)
         {
             this.navigationService = navigationService;
             this.repository = repository;
@@ -31,21 +33,19 @@ namespace ProfileBook.ViewModels
             this.authentication = authentication;
             this.validator = validator;
             this.profileService = profileService;
+            this.pageDialog = pageDialog;
         }
 
         public virtual void Initialize(INavigationParameters parameters)
         {
-
         }
 
         public virtual void OnNavigatedFrom(INavigationParameters parameters)
         {
-
         }
 
         public virtual void OnNavigatedTo(INavigationParameters parameters)
         {
-
         }
     }
 }

@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Xamarin.Forms;
 using ProfileBook.Properties;
+using Prism.Services;
 
 namespace ProfileBook.ViewModels
 {
@@ -20,10 +21,9 @@ namespace ProfileBook.ViewModels
         public MainListViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
             IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService)
-        {
-            
+            IProfileService profileService, IPageDialogService pageDialog) :
+            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
+        {            
         }
 
         private string _title;

@@ -1,4 +1,5 @@
 ﻿using Prism.Navigation;
+using Prism.Services;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
 using ProfileBook.Servises.Profile;
@@ -15,8 +16,8 @@ namespace ProfileBook.ViewModels
         public SettingsViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
             IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService)
+            IProfileService profileService, IPageDialogService pageDialog) :
+            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
         {         
         }
 

@@ -1,6 +1,4 @@
 ﻿using Acr.UserDialogs;
-using Plugin.Media;
-using Plugin.Media.Abstractions;
 using Prism.Navigation;
 using Prism.Services;
 using ProfileBook.Models;
@@ -19,15 +17,13 @@ namespace ProfileBook.ViewModels
     public class AddEditProfileViewModel : BaseViewModel
     {
         private Profile _profile;
-        private IPageDialogService _pageDialog;
 
         public AddEditProfileViewModel(INavigationService navigationService, IRepository repository, 
             ISettingsManager manager, IAuthorizationService authorization, 
             IAuthenticationService authentication, IValidator validator, 
             IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService)
+            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
         {
-            _pageDialog = pageDialog;
         }
 
         private ImageSource _pictupeSource = "profile.png";
@@ -98,96 +94,68 @@ namespace ProfileBook.ViewModels
             EditorText = _profile.Description;
         }
 
-        public ICommand TapCommand => new Command(AddPicture);
+        public ICommand TapCommand => new Command(ReplacePicture);
 
-        public void AddPicture()
+        public void ReplacePicture()
         {
             UserDialogs.Instance.ActionSheet(new ActionSheetConfig()
                            .SetTitle("Dialog")
                            .Add("Pick at Galery", () =>
                            {
-                               GetPathGalary();
-                           }, "collections.png")
+                               ReplaceFromGalary();
+                           })
                            .Add("Take photo with camera", () =>
                            {
-                               GetPathCamera();
-                           }, "camera.png")
+                               ReplaceFromCamera();
+                           })
+                           .Add("Delete picture", () => 
+                           {
+                               PictureSource = "profile.png";
+                           })
                        );
         }
 
-        private async void GetPathGalary()
+        private async void ReplaceFromGalary()
         {
-            try
-            {
-                if (CrossMedia.Current.IsPickPhotoSupported)
-                {
-                    MediaFile photo = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
-                    {
-                        CompressionQuality = 40,
-                        CustomPhotoSize = 35,
-                        MaxWidthHeight = 200,
-                        PhotoSize = PhotoSize.MaxWidthHeight         
-                    });
-                    PictureSource = ImageSource.FromFile(photo.Path);
-                }
-            }
-            catch { }
-        }
+            var photoPath = await profileService.GetPathFromGalary();
 
-        private async void GetPathCamera()
-        {
-            if (CrossMedia.Current.IsCameraAvailable && CrossMedia.Current.IsTakePhotoSupported)
+            if(!photoPath.Equals(string.Empty))
             {
-                MediaFile file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
-                {
-                    SaveToAlbum = true,
-                    Directory = "Sample",
-                    CompressionQuality = 40,
-                    CustomPhotoSize = 35,
-                    MaxWidthHeight = 200,
-                    PhotoSize = PhotoSize.MaxWidthHeight,                   
-                    DefaultCamera = CameraDevice.Rear,
-                    Name = $"{DateTime.Now.ToString("dd/MM/yyyy_hh/mm/ss")}.jpg"
-                });
-
-                if (file == null)
-                {
-                    await _pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, 
-                        Properties.Resource.AddEditAlert, "OK");
-                }
-                else
-                {
-                    PictureSource = ImageSource.FromFile(file.Path);
-                }                
+                PictureSource = ImageSource.FromFile(photoPath);
             }
         }
 
-        public ICommand SaveCommand => new Command(SaveProfile);
-
-        private void SaveProfile()
+        private async void ReplaceFromCamera()
         {
-            if (_profile == null)
+            var photoPath = await profileService.GetPathAfterCamera();
+
+            if (photoPath.Equals(string.Empty))
             {
-                Save();
+                await pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle,
+                    Properties.Resource.AddEditAlert, "OK");
             }
             else
             {
-                Update();
+                PictureSource = ImageSource.FromFile(photoPath);
+            }
+        }
+
+        public ICommand SaveCommand => new Command(SaveOrUpdate);
+
+        private void SaveOrUpdate()
+        {
+            if (_profile == null)
+            {
+                CreateProfile();
+                profileService.SaveProfile(repository, _profile);
+            }
+            else
+            {
+                UpdateProfile();
+                profileService.UpdateProfile(repository, _profile);
             }
 
             GoToMainListView();
-        }
-
-        private void Save()
-        {
-            CreateProfile();
-            profileService.SaveProfile(repository, _profile);
-        }
-
-        private void Update()
-        {
-            UpdateProfile();
-            profileService.UpdateProfile(repository, _profile);
         }
 
         private async void GoToMainListView()
