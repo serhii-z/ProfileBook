@@ -4,17 +4,17 @@ using System.Collections.Generic;
 namespace ProfileBook.Servises.Settings
 {
     public interface ISettingsManager
-    {
-        void ApplyTheme(bool isDarkTheme);
+    {    
         List<Models.Profile> SortByName(IRepository repository, int id);
         List<Models.Profile> SortByNickName(IRepository repository, int id);
         List<Models.Profile> SortByDate(IRepository repository, int id);
+        void ApplyTheme(string themeName);
         void ApplyCulture();
-        void AddOrUpdateCulture(string culture);
         void AddOrUpdateSorting(string sortingName);
-        void AddOrUpdateTheme(bool isTheme);
+        void AddOrUpdateTheme(string themeName);
+        void AddOrUpdateCulture(string culture);     
         string GetSortingName();
+        string GetThemeName();
         string GetCultureName();
-        bool GetThemeActive();
     }
 }

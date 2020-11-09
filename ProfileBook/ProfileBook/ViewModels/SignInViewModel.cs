@@ -61,6 +61,12 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _enabledButton, value);
         }
 
+        private void InitializeSettings()
+        {
+            var themeName = manager.GetThemeName();
+            manager.ApplyTheme(themeName);
+        }
+
         private void ProcessTextChanged()
         {
             if (!string.IsNullOrEmpty(_entryLoginText) &&
@@ -113,13 +119,12 @@ namespace ProfileBook.ViewModels
             if (parameters.TryGetValue("login", out string login))
             {
                 EntryLoginText = login;
-            }
+            }            
         }
 
         public override void Initialize(INavigationParameters parameters)
         {
-            var isDark = manager.GetThemeActive();
-            manager.ApplyTheme(isDark);
+            InitializeSettings();
         }
     }
 }

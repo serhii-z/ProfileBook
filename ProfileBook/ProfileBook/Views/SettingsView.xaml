@@ -28,7 +28,7 @@
             </FlexLayout>
 
             <FlexLayout Direction="Row" FlexLayout.Grow="1">
-                <CheckBox IsChecked="{Binding IsTheme}" WidthRequest="50" />
+                <CheckBox IsChecked="{Binding IsDark}" WidthRequest="50" />
                 <Label Text="{x:Static resource:Resource.SettingsLabelTheme}" VerticalTextAlignment="Center"/>
             </FlexLayout>
 

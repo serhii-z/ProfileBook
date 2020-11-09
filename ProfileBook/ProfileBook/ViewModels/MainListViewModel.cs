@@ -113,8 +113,8 @@ namespace ProfileBook.ViewModels
 
         private void InitializeSettings()
         {
-            var isDark = manager.GetThemeActive();
-            manager.ApplyTheme(isDark);
+            var themeName = manager.GetThemeName();
+            manager.ApplyTheme(themeName);
 
             Title = Resource.MainListTitle;
         }
@@ -146,7 +146,7 @@ namespace ProfileBook.ViewModels
         private void CancelAuthorization()
         {
             authorization.ExecuteAutorization(0);
-            manager.ApplyTheme(false);
+            manager.ApplyTheme(string.Empty);
             GoToSignInView();
         }
 
@@ -183,7 +183,6 @@ namespace ProfileBook.ViewModels
         public override void OnNavigatedTo(INavigationParameters parameters)
         {
             InitializeSettings();
-
             ShowCollection();
         }
     }

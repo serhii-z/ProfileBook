@@ -80,14 +80,21 @@ namespace ProfileBook.ViewModels
             }
         }
 
-        private bool _isTheme;
-        public bool IsTheme
+        private bool _isDark;
+        public bool IsDark
         {
-            get => _isTheme;
+            get => _isDark;
             set
             {
-                SetProperty(ref _isTheme, value);
-                manager.AddOrUpdateTheme(_isTheme);
+                SetProperty(ref _isDark, value);
+                if (_isDark)
+                {
+                    manager.AddOrUpdateTheme("dark");
+                }
+                else
+                {
+                    manager.AddOrUpdateTheme(string.Empty);
+                }             
             }
         }
 
@@ -105,7 +112,7 @@ namespace ProfileBook.ViewModels
                 }
                 else
                 {
-                    manager.AddOrUpdateCulture("en");
+                    manager.AddOrUpdateCulture(string.Empty);
                 }
                 manager.ApplyCulture();
             }
@@ -125,7 +132,7 @@ namespace ProfileBook.ViewModels
                 }
                 else
                 {                  
-                    manager.AddOrUpdateCulture("en");
+                    manager.AddOrUpdateCulture(string.Empty);
                 }
                 manager.ApplyCulture();
             }
@@ -151,7 +158,14 @@ namespace ProfileBook.ViewModels
 
         private void ActivateTheme()
         {
-            IsTheme = manager.GetThemeActive();
+            string themeName = manager.GetThemeName();
+
+            switch (themeName)
+            {
+                case "dark":
+                    IsDark = true;
+                    break;
+            }
         }
 
         private void ActivateCulture()

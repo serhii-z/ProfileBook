@@ -7,7 +7,7 @@ namespace ProfileBook.Servises.Profile
     {
         int SaveProfile(IRepository repository, Models.Profile profile);
         int UpdateProfile(IRepository repository, Models.Profile profile);
-        List<Models.Profile> GetProfiles(IRepository repository, int userId);
         int DeleteProfile(IRepository repository, Models.Profile profile);
+        List<Models.Profile> GetProfiles(IRepository repository, int userId);     
     }
 }

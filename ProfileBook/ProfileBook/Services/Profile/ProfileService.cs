@@ -15,15 +15,15 @@ namespace ProfileBook.Servises.Profile
             return repository.UpdateItem(profile).Result;
         }
 
+        public int DeleteProfile(IRepository repository, Models.Profile profile)
+        {
+            return repository.DeleteItemAsync(profile).Result;
+        }
+
         public List<Models.Profile> GetProfiles(IRepository repository, int userId)
         {
             string sql = $"SELECT * FROM Profiles WHERE UserId='{userId}'";
             return repository.GetListItems<Models.Profile>(sql).Result;
-        }
-
-        public int DeleteProfile(IRepository repository, Models.Profile profile)
-        {
-            return repository.DeleteItemAsync(profile).Result;
         }
     }
 }

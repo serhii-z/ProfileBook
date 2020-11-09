@@ -9,21 +9,6 @@ namespace ProfileBook.Servises.Settings
 {
     public class SettingsManager : ISettingsManager
     {
-        public void ApplyTheme(bool isDarkTheme)
-        {
-            var resource = App.Current.Resources;
-            resource.Clear();
-
-            if (isDarkTheme)
-            {
-                resource.Add(new darkTheme());
-            }
-            else
-            {
-                resource.Add(new lightTheme());
-            }
-        }
-
         public List<Models.Profile> SortByName(IRepository repository, int id)
         {
             string sql = $"SELECT * FROM Profiles  WHERE UserId='{id}' ORDER BY Name";
@@ -42,16 +27,33 @@ namespace ProfileBook.Servises.Settings
             return repository.GetListItems<Models.Profile>(sql).Result;
         }
 
-        public void ApplyCulture()
+        public void ApplyTheme(string themeName)
         {
-            string culture = CrossSettings.Current.GetValueOrDefault("culture", "en");
-            CultureInfo myCIintl = new CultureInfo(culture, false);
-            Resource.Culture = myCIintl;
+            var resource = App.Current.Resources;
+            resource.Clear();
+
+            switch (themeName)
+            {
+                case "dark":
+                    resource.Add(new darkTheme());
+                    break;
+                default:
+                    resource.Add(new lightTheme());
+                    break;
+            }
         }
 
-        public void AddOrUpdateCulture(string culture)
+        public void ApplyCulture()
         {
-            CrossSettings.Current.AddOrUpdateValue("culture", culture);
+            string culture = CrossSettings.Current.GetValueOrDefault("culture", string.Empty);
+
+            if (culture.Equals(string.Empty))
+            {
+                culture = "en";
+            }
+
+            CultureInfo myCIintl = new CultureInfo(culture, false);
+            Resource.Culture = myCIintl;
         }
 
         public void AddOrUpdateSorting(string sortingName)
@@ -59,9 +61,14 @@ namespace ProfileBook.Servises.Settings
             CrossSettings.Current.AddOrUpdateValue("sort", sortingName);
         }
 
-        public void AddOrUpdateTheme(bool isTheme)
+        public void AddOrUpdateTheme(string themeName)
         {
-            CrossSettings.Current.AddOrUpdateValue("theme", isTheme);
+            CrossSettings.Current.AddOrUpdateValue("theme", themeName);
+        }
+
+        public void AddOrUpdateCulture(string culture)
+        {
+            CrossSettings.Current.AddOrUpdateValue("culture", culture);
         }
 
         public string GetSortingName()
@@ -69,14 +76,14 @@ namespace ProfileBook.Servises.Settings
             return CrossSettings.Current.GetValueOrDefault("sort", string.Empty);
         }
 
+        public string GetThemeName()
+        {
+            return CrossSettings.Current.GetValueOrDefault("theme", "light");
+        }
+
         public string GetCultureName()
         {
             return CrossSettings.Current.GetValueOrDefault("culture", "en");
-        }
-
-        public bool GetThemeActive()
-        {
-            return CrossSettings.Current.GetValueOrDefault("theme", false);
         }
     }
 }

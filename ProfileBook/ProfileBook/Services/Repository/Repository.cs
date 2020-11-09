@@ -19,16 +19,6 @@ namespace ProfileBook.Servises.Repository
             _database = new SQLiteAsyncConnection(DatabasePath);
         }
 
-        public async Task<List<T>> GetListItems<T>(string sql) where T : new()
-        {
-            return await _database.QueryAsync<T>(sql).ConfigureAwait(false);
-        }
-
-        public async Task<T> GetItem<T>(int id) where T : new()
-        {
-            return await _database.GetAsync<T>(id).ConfigureAwait(false);
-        }
-
         public async Task<int> SaveItem<T>(T item)
         {
             return await _database.InsertAsync(item).ConfigureAwait(false);
@@ -42,6 +32,11 @@ namespace ProfileBook.Servises.Repository
         public async Task<int> DeleteItemAsync<T>(T item)
         {
             return await _database.DeleteAsync(item).ConfigureAwait(false);
+        }
+
+        public async Task<List<T>> GetListItems<T>(string sql) where T : new()
+        {
+            return await _database.QueryAsync<T>(sql).ConfigureAwait(false);
         }
     }
 }
