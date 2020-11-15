@@ -8,7 +8,7 @@ namespace ProfileBook.Servises.Authorization
     {
         public int SaveUser(IRepository repository, User user)
         {
-            return repository.SaveItem(user).Result;
+            return repository.InsertItem(user).Result;
         }
 
         public void ExecuteAutorization(int id)

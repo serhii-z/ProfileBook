@@ -33,21 +33,21 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _pictupeSource, value);
         }
 
-        private string _entryNickNameText = string.Empty;
+        private string _entryNickNameText;
         public string EntryNickNameText
         {
             get => _entryNickNameText;
             set => SetProperty(ref _entryNickNameText, value);
         }
 
-        private string _entryNameText = string.Empty;
+        private string _entryNameText;
         public string EntryNameText
         {
             get => _entryNameText;
             set => SetProperty(ref _entryNameText, value);
         }
 
-        private string _editorText = string.Empty;
+        private string _editorText;
         public string EditorText
         {
             get => _editorText;
@@ -119,7 +119,7 @@ namespace ProfileBook.ViewModels
         {
             var photoPath = await profileService.GetPathFromGalary();
 
-            if(!photoPath.Equals(string.Empty))
+            if(!string.IsNullOrEmpty(photoPath))
             {
                 PictureSource = ImageSource.FromFile(photoPath);
             }
@@ -129,7 +129,7 @@ namespace ProfileBook.ViewModels
         {
             var photoPath = await profileService.GetPathAfterCamera();
 
-            if (photoPath.Equals(string.Empty))
+            if (string.IsNullOrEmpty(photoPath))
             {
                 await pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle,
                     Properties.Resource.AddEditAlert, "OK");

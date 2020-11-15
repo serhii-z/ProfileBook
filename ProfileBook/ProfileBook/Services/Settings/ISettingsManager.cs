@@ -8,13 +8,13 @@ namespace ProfileBook.Servises.Settings
         List<Models.Profile> SortByName(IRepository repository, int id);
         List<Models.Profile> SortByNickName(IRepository repository, int id);
         List<Models.Profile> SortByDate(IRepository repository, int id);
-        void ApplyTheme(string themeName);
-        void ApplyCulture();
-        void AddOrUpdateSorting(string sortingName);
-        void AddOrUpdateTheme(string themeName);
-        void AddOrUpdateCulture(string culture);     
-        string GetSortingName();
-        string GetThemeName();
-        string GetCultureName();
+        void AplyTheme(string themeName);
+        void AplyCulture(IRepository repository);
+        void AddOrUpdateSorting(IRepository repository, string sortingName);
+        void AddOrUpdateTheme(IRepository repository, string themeName);
+        void AddOrUpdateCulture(IRepository repository, string culture);     
+        string GetSortingName(IRepository repository);
+        string GetThemeName(IRepository repository);
+        string GetCultureName(IRepository repository);
     }
 }

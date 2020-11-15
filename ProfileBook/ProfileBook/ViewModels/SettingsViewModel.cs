@@ -32,11 +32,11 @@ namespace ProfileBook.ViewModels
                 {
                     IsNickName = false;
                     IsDate = false;
-                    manager.AddOrUpdateSorting("name");
+                    manager.AddOrUpdateSorting(repository, "name");
                 }
                 else
                 {
-                    manager.AddOrUpdateSorting(string.Empty);
+                    manager.AddOrUpdateSorting(repository, string.Empty);
                 }
             }
         }
@@ -52,11 +52,11 @@ namespace ProfileBook.ViewModels
                 {
                     IsName = false;
                     IsDate = false;
-                    manager.AddOrUpdateSorting("nickName");
+                    manager.AddOrUpdateSorting(repository, "nickName");
                 }
                 else
                 {
-                    manager.AddOrUpdateSorting(string.Empty);
+                    manager.AddOrUpdateSorting(repository, string.Empty);
                 }
             }
         }
@@ -72,11 +72,11 @@ namespace ProfileBook.ViewModels
                 {
                     IsName = false;
                     IsNickName = false;
-                    manager.AddOrUpdateSorting("date");
+                    manager.AddOrUpdateSorting(repository, "date");
                 }
                 else
                 {
-                    manager.AddOrUpdateSorting(string.Empty);
+                    manager.AddOrUpdateSorting(repository, string.Empty);
                 }
             }
         }
@@ -90,11 +90,11 @@ namespace ProfileBook.ViewModels
                 SetProperty(ref _isDark, value);
                 if (_isDark)
                 {
-                    manager.AddOrUpdateTheme("dark");
+                    manager.AddOrUpdateTheme(repository, "dark");
                 }
                 else
                 {
-                    manager.AddOrUpdateTheme(string.Empty);
+                    manager.AddOrUpdateTheme(repository, string.Empty);
                 }             
             }
         }
@@ -109,13 +109,13 @@ namespace ProfileBook.ViewModels
                 if (_isUkrainian)
                 {
                     IsRussian = false;
-                    manager.AddOrUpdateCulture("uk");
+                    manager.AddOrUpdateCulture(repository, "uk");
                 }
                 else
                 {
-                    manager.AddOrUpdateCulture(string.Empty);
+                    manager.AddOrUpdateCulture(repository, string.Empty);
                 }
-                manager.ApplyCulture();
+                manager.AplyCulture(repository);
             }
         }
 
@@ -129,19 +129,19 @@ namespace ProfileBook.ViewModels
                 if (_isRussian)
                 {
                     IsUkrainian = false;
-                    manager.AddOrUpdateCulture("ru");
+                    manager.AddOrUpdateCulture(repository, "ru");
                 }
                 else
                 {                  
-                    manager.AddOrUpdateCulture(string.Empty);
+                    manager.AddOrUpdateCulture(repository, string.Empty);
                 }
-                manager.ApplyCulture();
+                manager.AplyCulture(repository);
             }
         }
 
         private void ActivateSorting()
         {
-            string sortingName = manager.GetSortingName();
+            string sortingName = manager.GetSortingName(repository);
 
             switch (sortingName)
             {
@@ -159,7 +159,7 @@ namespace ProfileBook.ViewModels
 
         private void ActivateTheme()
         {
-            string themeName = manager.GetThemeName();
+            string themeName = manager.GetThemeName(repository);
 
             switch (themeName)
             {
@@ -171,7 +171,7 @@ namespace ProfileBook.ViewModels
 
         private void ActivateCulture()
         {
-            string cultureName = manager.GetCultureName();
+            string cultureName = manager.GetCultureName(repository);
 
             switch (cultureName)
             {

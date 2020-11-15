@@ -5,7 +5,7 @@ namespace ProfileBook.Servises.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
-        public int FindUser(IRepository repository, string login, string password)
+        public int VerifyUser(IRepository repository, string login, string password)
         {
             string sql = $"SELECT * FROM Users WHERE Login='{login}' AND Password='{password}'";
             var user = repository.FindItem<User>(sql).Result;
@@ -21,9 +21,9 @@ namespace ProfileBook.Servises.Authentication
         public bool CheckLogin(IRepository repository, string login)
         {
             string sql = $"SELECT * FROM Users WHERE Login='{login}'";
-            var list = repository.GetListItems<User>(sql).Result;
+            var user = repository.FindItem<User>(sql).Result;
 
-            if (list.Count > 0)
+            if (user != null)
             {
                 return true;
             }

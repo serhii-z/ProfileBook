@@ -60,7 +60,7 @@ namespace ProfileBook.Servises.Profile
 
         public int SaveProfile(IRepository repository, Models.Profile profile)
         {
-            return repository.SaveItem(profile).Result;
+            return repository.InsertItem(profile).Result;
         }
 
         public int UpdateProfile(IRepository repository, Models.Profile profile)
@@ -76,7 +76,7 @@ namespace ProfileBook.Servises.Profile
         public List<Models.Profile> GetProfiles(IRepository repository, int userId)
         {
             string sql = $"SELECT * FROM Profiles WHERE UserId='{userId}'";
-            return repository.GetListItems<Models.Profile>(sql).Result;
+            return repository.ChooseItems<Models.Profile>(sql).Result;
         }
     }
 }

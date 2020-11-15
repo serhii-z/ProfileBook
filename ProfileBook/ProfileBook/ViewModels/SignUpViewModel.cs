@@ -30,9 +30,13 @@ namespace ProfileBook.ViewModels
             {
                 SetProperty(ref _entryLoginText, value);
                 if (!string.IsNullOrEmpty(_entryLoginText))
+                {
                     ProcessTextChanged();
+                }                  
                 else
+                {
                     ProcessTextChangedEmpty();
+                }                
             }
         }
 
@@ -44,9 +48,13 @@ namespace ProfileBook.ViewModels
             {
                 SetProperty(ref _entryPasswordText, value);
                 if (!string.IsNullOrEmpty(_entryPasswordText))
+                {
                     ProcessTextChanged();
+                }                
                 else
+                {
                     ProcessTextChangedEmpty();
+                }                   
             }
         }
 
@@ -58,9 +66,13 @@ namespace ProfileBook.ViewModels
             {
                 SetProperty(ref _entryConfitmPasswordText, value);
                 if (!string.IsNullOrEmpty(_entryConfitmPasswordText))
+                {
                     ProcessTextChanged();
+                }               
                 else
+                {
                     ProcessTextChangedEmpty();
+                }               
             }
         }
 

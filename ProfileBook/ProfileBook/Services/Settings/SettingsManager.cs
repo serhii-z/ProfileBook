@@ -1,4 +1,5 @@
 ﻿using Plugin.Settings;
+using ProfileBook.Models;
 using ProfileBook.Properties;
 using ProfileBook.Resources.Themes;
 using ProfileBook.Servises.Repository;
@@ -12,22 +13,22 @@ namespace ProfileBook.Servises.Settings
         public List<Models.Profile> SortByName(IRepository repository, int id)
         {
             string sql = $"SELECT * FROM Profiles  WHERE UserId='{id}' ORDER BY Name";
-            return repository.GetListItems<Models.Profile>(sql).Result;
+            return repository.ChooseItems<Models.Profile>(sql).Result;
         }
 
         public List<Models.Profile> SortByNickName(IRepository repository, int id)
         {
             string sql = $"SELECT * FROM Profiles  WHERE UserId='{id}' ORDER BY NickName";
-            return repository.GetListItems<Models.Profile>(sql).Result;
+            return repository.ChooseItems<Models.Profile>(sql).Result;
         }
 
         public List<Models.Profile> SortByDate(IRepository repository, int id)
         {
             string sql = $"SELECT * FROM Profiles  WHERE UserId='{id}' ORDER BY StartDate";
-            return repository.GetListItems<Models.Profile>(sql).Result;
+            return repository.ChooseItems<Models.Profile>(sql).Result;
         }
 
-        public void ApplyTheme(string themeName)
+        public void AplyTheme(string themeName)
         {
             var resource = App.Current.Resources;
             resource.Clear();
@@ -43,11 +44,11 @@ namespace ProfileBook.Servises.Settings
             }
         }
 
-        public void ApplyCulture()
+        public void AplyCulture(IRepository repository)
         {
-            var culture = CrossSettings.Current.GetValueOrDefault("culture", string.Empty);
+            var culture = GetCultureName(repository);
 
-            if (culture.Equals(string.Empty))
+            if (string.IsNullOrEmpty(culture))
             {
                 culture = "en";
             }
@@ -56,34 +57,112 @@ namespace ProfileBook.Servises.Settings
             Resource.Culture = myCIintl;
         }
 
-        public void AddOrUpdateSorting(string sortingName)
+        public void AddOrUpdateSorting(IRepository repository, string sortingName)
         {
-            CrossSettings.Current.AddOrUpdateValue("sort", sortingName);
+            var userSettings = FindUserSettings(repository);
+
+            if (userSettings == null)
+            {
+                userSettings = CreateUserSettings();
+                userSettings.Sorting = sortingName;
+                repository.InsertItem<UserSettings>(userSettings);
+            }
+            else
+            {
+                userSettings.Sorting = sortingName;
+                repository.UpdateItem<UserSettings>(userSettings);
+            }        
         }
 
-        public void AddOrUpdateTheme(string themeName)
+        public void AddOrUpdateTheme(IRepository repository, string themeName)
         {
-            CrossSettings.Current.AddOrUpdateValue("theme", themeName);
+            var userSettings = FindUserSettings(repository);
+
+            if (userSettings == null)
+            {
+                userSettings = CreateUserSettings();
+                userSettings.Theme = themeName;
+                repository.InsertItem<UserSettings>(userSettings);
+            }
+            else
+            {
+                userSettings.Theme = themeName;
+                repository.UpdateItem<UserSettings>(userSettings);
+            }
         }
 
-        public void AddOrUpdateCulture(string culture)
+        public void AddOrUpdateCulture(IRepository repository, string culture)
         {
-            CrossSettings.Current.AddOrUpdateValue("culture", culture);
+            var userSettings = FindUserSettings(repository);
+
+            if (userSettings == null)
+            {
+                userSettings = CreateUserSettings();                
+                userSettings.Culture = culture;
+                repository.InsertItem<UserSettings>(userSettings);
+            }
+            else
+            {
+                userSettings.Culture = culture;
+                repository.UpdateItem<UserSettings>(userSettings);
+            }
         }
 
-        public string GetSortingName()
+        public string GetSortingName(IRepository repository)
         {
-            return CrossSettings.Current.GetValueOrDefault("sort", string.Empty);
+            var userSettings = FindUserSettings(repository);
+
+            if (userSettings == null)
+            {
+                return string.Empty;
+            }
+
+            return userSettings.Sorting;
         }
 
-        public string GetThemeName()
+        public string GetThemeName(IRepository repository)
         {
-            return CrossSettings.Current.GetValueOrDefault("theme", string.Empty);
+            var userSettings = FindUserSettings(repository);
+
+            if(userSettings == null)
+            {
+                return string.Empty;             
+            }
+
+            return userSettings.Theme;
         }
 
-        public string GetCultureName()
+        public string GetCultureName(IRepository repository)
         {
-            return CrossSettings.Current.GetValueOrDefault("culture", string.Empty);
+            var userSettings = FindUserSettings(repository);
+
+            if (userSettings == null)
+            {
+                return string.Empty;
+            }
+
+            return userSettings.Culture;
+        }
+
+        private UserSettings CreateUserSettings()
+        {
+            var userSettings = new UserSettings();
+            userSettings.UserId = CrossSettings.Current.GetValueOrDefault("id", 0);
+
+            return userSettings;
+        }
+
+        private UserSettings FindUserSettings(IRepository repository)
+        {
+            var userId = CrossSettings.Current.GetValueOrDefault("id", 0);
+
+            if (userId == 0)
+            {
+                return null;
+            }
+
+            string sql = $"SELECT * FROM UserSettings WHERE UserId='{userId}'";
+            return repository.FindItem<UserSettings>(sql).Result;            
         }
     }
 }

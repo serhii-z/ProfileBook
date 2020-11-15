@@ -59,8 +59,6 @@ namespace ProfileBook
 
         protected override void OnInitialized()
         {
-            Container.Resolve<SettingsManager>().ApplyCulture();
-
             var userId = CrossSettings.Current.GetValueOrDefault("id", 0);
 
             GoToView(userId);
@@ -70,6 +68,9 @@ namespace ProfileBook
         {
             if (userId > 0)
             {
+                var repository = Container.Resolve(typeof(Repository)) as Repository;
+                Container.Resolve<SettingsManager>().AplyCulture(repository);
+
                 await NavigationService.NavigateAsync($"/{nameof(NavigationPage)}/{nameof(MainListView)}");
             }
             else

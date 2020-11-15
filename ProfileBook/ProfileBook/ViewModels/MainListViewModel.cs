@@ -92,7 +92,7 @@ namespace ProfileBook.ViewModels
 
         private void ShowCollection()
         {
-            var sortingName = manager.GetSortingName();
+            var sortingName = manager.GetSortingName(repository);
             var userId = authorization.GetAutorization();
             var profiles = GetProfiles(sortingName, userId);
 
@@ -113,8 +113,8 @@ namespace ProfileBook.ViewModels
 
         private void InitializeSettings()
         {
-            var themeName = manager.GetThemeName();
-            manager.ApplyTheme(themeName);
+            var themeName = manager.GetThemeName(repository);
+            manager.AplyTheme(themeName);
 
             Title = Resource.MainListTitle;
         }
@@ -146,7 +146,8 @@ namespace ProfileBook.ViewModels
         private void CancelAuthorization()
         {
             authorization.ExecuteAutorization(0);
-            manager.ApplyTheme(string.Empty);
+            manager.AplyTheme(string.Empty);
+            manager.AplyCulture(repository);
             GoToSignInView();
         }
 

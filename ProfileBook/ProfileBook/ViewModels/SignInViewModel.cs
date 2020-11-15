@@ -30,9 +30,13 @@ namespace ProfileBook.ViewModels
             {
                 SetProperty(ref _entryLoginText, value);
                 if (!string.IsNullOrEmpty(_entryLoginText))
+                {
                     ProcessTextChanged();
+                }
                 else
+                {
                     ProcessTextChangedEmpty();
+                }                   
             }
         }
 
@@ -44,9 +48,13 @@ namespace ProfileBook.ViewModels
             {
                 SetProperty(ref _entryPasswordText, value);
                 if (!string.IsNullOrEmpty(_entryPasswordText))
+                {
                     ProcessTextChanged();
+                }               
                 else
+                {
                     ProcessTextChangedEmpty();
+                }                 
             }
         }
 
@@ -59,8 +67,8 @@ namespace ProfileBook.ViewModels
 
         private void InitializeSettings()
         {
-            var themeName = manager.GetThemeName();
-            manager.ApplyTheme(themeName);
+            var themeName = manager.GetThemeName(repository);
+            manager.AplyTheme(themeName);
         }
 
         private void ProcessTextChanged()
@@ -86,7 +94,7 @@ namespace ProfileBook.ViewModels
 
         private void VerifyUser()
         {
-            var userId = authentication.FindUser(repository, _entryLoginText, _entryPasswordText);
+            var userId = authentication.VerifyUser(repository, _entryLoginText, _entryPasswordText);
             MakeAuthorization(userId);
         }
 
@@ -107,6 +115,8 @@ namespace ProfileBook.ViewModels
 
         private async void GoToMainListView(int id)
         {
+            manager.AplyCulture(repository);
+
             await navigationService.NavigateAsync($"{nameof(MainListView)}");
         }
 
