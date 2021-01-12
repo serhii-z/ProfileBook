@@ -70,39 +70,43 @@ namespace ProfileBook.ViewModels
             await navigationService.NavigateAsync($"{nameof(ModalView)}", parameters, useModalNavigation: true);
         }
 
-        private List<Profile> GetProfiles(string sortingName, int userId)
+        private List<Profile> GetProfilesDefault(int userId)
         {
-            var profiles = profileService.GetProfiles(repository, userId);
-
-            switch (sortingName)
-            {
-                case "name":
-                    profiles = manager.SortByName(repository, userId);
-                    break;
-                case "nickName":
-                    profiles = manager.SortByNickName(repository, userId);
-                    break;
-                case "date":
-                    profiles = manager.SortByDate(repository, userId);
-                    break;
-            }
-
-            return profiles;
+            return profileService.GetProfiles(repository, userId);
         }
 
-        private void ShowCollection()
+        private List<Profile> GetSortedProfiles(int userId, string sortingName)
+        {
+            var sql = manager.CreateSortRequest(userId, sortingName);
+
+            return manager.Sort(repository, sql);
+        }
+
+        private List<Profile> GetProfiles()
         {
             var sortingName = manager.GetSortingName(repository);
-            var userId = authorization.GetAutorization();
-            var profiles = GetProfiles(sortingName, userId);
+            
+            if (sortingName == string.Empty)
+            {
+                return GetProfilesDefault(authorization.GetUserId());
+            }
+            else
+            {
+                return GetSortedProfiles(authorization.GetUserId(), sortingName);
+            }
+        }
 
+        private void ShowProfiles(List<Profile> profiles)
+        {          
             if (profiles.Count > 0)
             {
                 Items = new ObservableCollection<Profile>();
+
                 foreach (var item in profiles)
                 {
                     Items.Add(item);
                 }
+
                 IsNoProfiles = false;
             }
             else
@@ -113,8 +117,7 @@ namespace ProfileBook.ViewModels
 
         private void InitializeSettings()
         {
-            var themeName = manager.GetThemeName(repository);
-            manager.AplyTheme(themeName);
+            manager.AplyTheme(manager.GetThemeName(repository));
 
             Title = Resource.MainListTitle;
         }
@@ -145,7 +148,7 @@ namespace ProfileBook.ViewModels
 
         private void CancelAuthorization()
         {
-            authorization.ExecuteAutorization(0);
+            authorization.ExecuteAuthorization(0);
             manager.AplyTheme(string.Empty);
             manager.AplyCulture(repository);
             GoToSignInView();
@@ -184,7 +187,9 @@ namespace ProfileBook.ViewModels
         public override void OnNavigatedTo(INavigationParameters parameters)
         {
             InitializeSettings();
-            ShowCollection();
+
+            var profiles = GetProfiles();
+            ShowProfiles(profiles);
         }
     }
 }

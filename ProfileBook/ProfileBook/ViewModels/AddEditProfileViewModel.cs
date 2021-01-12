@@ -63,7 +63,7 @@ namespace ProfileBook.ViewModels
 
         private void CreateProfile()
         {
-            var userId = authorization.GetAutorization();
+            var userId = authorization.GetUserId();
             var path = ExtractPath();
 
             _profile = new Profile()

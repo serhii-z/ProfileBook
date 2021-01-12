@@ -32,7 +32,7 @@ namespace ProfileBook.ViewModels
                 {
                     IsNickName = false;
                     IsDate = false;
-                    manager.AddOrUpdateSorting(repository, "name");
+                    manager.AddOrUpdateSorting(repository, "Name");
                 }
                 else
                 {
@@ -52,7 +52,7 @@ namespace ProfileBook.ViewModels
                 {
                     IsName = false;
                     IsDate = false;
-                    manager.AddOrUpdateSorting(repository, "nickName");
+                    manager.AddOrUpdateSorting(repository, "NickName");
                 }
                 else
                 {
@@ -72,7 +72,7 @@ namespace ProfileBook.ViewModels
                 {
                     IsName = false;
                     IsNickName = false;
-                    manager.AddOrUpdateSorting(repository, "date");
+                    manager.AddOrUpdateSorting(repository, "StartDate");
                 }
                 else
                 {
@@ -145,13 +145,13 @@ namespace ProfileBook.ViewModels
 
             switch (sortingName)
             {
-                case "name":
+                case "Name":
                     IsName = true;
                     break;
-                case "nickName":
+                case "NickName":
                     IsNickName = true;
                     break;
-                case "date":
+                case "StartDate":
                     IsDate = true;
                     break;
             }
@@ -191,7 +191,7 @@ namespace ProfileBook.ViewModels
             await navigationService.GoBackAsync();
         }
 
-        public override void Initialize(INavigationParameters parameters)
+        public override void OnNavigatedTo(INavigationParameters parameters)
         {
             ActivateSorting();
             ActivateCulture();

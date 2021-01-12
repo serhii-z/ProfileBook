@@ -11,12 +11,12 @@ namespace ProfileBook.Servises.Authorization
             return repository.InsertItem(user).Result;
         }
 
-        public void ExecuteAutorization(int id)
+        public void ExecuteAuthorization(int id)
         {
             CrossSettings.Current.AddOrUpdateValue("id", id);
         }
 
-        public int GetAutorization()
+        public int GetUserId()
         {
             return CrossSettings.Current.GetValueOrDefault("id", 0);
         }

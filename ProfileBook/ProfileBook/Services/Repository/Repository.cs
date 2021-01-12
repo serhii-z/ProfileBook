@@ -42,7 +42,5 @@ namespace ProfileBook.Servises.Repository
         {
             return await _database.QueryAsync<T>(sql).ConfigureAwait(false);
         }
-
-
     }
 }

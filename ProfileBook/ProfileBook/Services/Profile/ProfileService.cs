@@ -11,51 +11,41 @@ namespace ProfileBook.Servises.Profile
     {
         public async Task<string> GetPathFromGalary()
         {
-            var photoPath = string.Empty;
-
-                if (CrossMedia.Current.IsPickPhotoSupported)
+            if (CrossMedia.Current.IsPickPhotoSupported)
+            {
+                MediaFile photo = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
                 {
-                    MediaFile photo = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
-                    {
-                        CompressionQuality = 40,
-                        CustomPhotoSize = 35,
-                        MaxWidthHeight = 200,
-                        PhotoSize = PhotoSize.MaxWidthHeight
-                    });
+                    PhotoSize = PhotoSize.Small
+                });
 
-                    if(photo != null)
-                    {
-                        photoPath = photo.Path;
-                    }                
-                }
+                if(photo != null)
+                {
+                    return photo.Path;
+                }                
+            }
 
-            return photoPath;
+            return string.Empty;
         }
 
         public async Task<string> GetPathAfterCamera()
         {
-            var photoPath = string.Empty;
-
             if (CrossMedia.Current.IsCameraAvailable && CrossMedia.Current.IsTakePhotoSupported)
             {
                 MediaFile file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
                 {
                     SaveToAlbum = true,
-                    CompressionQuality = 40,
-                    CustomPhotoSize = 35,
-                    MaxWidthHeight = 200,
-                    PhotoSize = PhotoSize.MaxWidthHeight,
+                    PhotoSize = PhotoSize.Small,
                     DefaultCamera = CameraDevice.Rear,
                     Name = $"{DateTime.Now.ToString("dd/MM/yyyy_hh/mm/ss")}.jpg"
                 });
 
                 if(file != null)
                 {
-                    photoPath = file.Path;
+                    return file.Path;
                 }
             }
 
-            return photoPath;
+            return string.Empty;
         }
 
         public int SaveProfile(IRepository repository, Models.Profile profile)

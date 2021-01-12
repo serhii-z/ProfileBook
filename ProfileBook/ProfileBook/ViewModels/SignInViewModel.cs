@@ -102,7 +102,7 @@ namespace ProfileBook.ViewModels
         {
             if (userId > 0)
             {
-                authorization.ExecuteAutorization(userId);
+                authorization.ExecuteAuthorization(userId);
                 GoToMainListView(userId);
             }
             else
