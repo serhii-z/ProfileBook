@@ -42,6 +42,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resource.uk.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Themes\darkTheme.xaml.cs">
+      <DependentUpon>DarkTheme.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Themes\lightTheme.xaml.cs">
+      <DependentUpon>LightTheme.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -57,10 +63,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.uk.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Themes\darkTheme.xaml">
+    <EmbeddedResource Update="Resources\Themes\DarkTheme.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\Themes\lightTheme.xaml">
+    <EmbeddedResource Update="Resources\Themes\LightTheme.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Views\AddEditProfileView.xaml">

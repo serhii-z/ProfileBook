@@ -29,14 +29,7 @@ namespace ProfileBook.ViewModels
             set
             {
                 SetProperty(ref _entryLoginText, value);
-                if (!string.IsNullOrEmpty(_entryLoginText))
-                {
-                    ProcessTextChanged();
-                }                  
-                else
-                {
-                    ProcessTextChangedEmpty();
-                }                
+                CheckTextInput(_entryLoginText);              
             }
         }
 
@@ -47,14 +40,7 @@ namespace ProfileBook.ViewModels
             set
             {
                 SetProperty(ref _entryPasswordText, value);
-                if (!string.IsNullOrEmpty(_entryPasswordText))
-                {
-                    ProcessTextChanged();
-                }                
-                else
-                {
-                    ProcessTextChangedEmpty();
-                }                   
+                CheckTextInput(_entryPasswordText);                 
             }
         }
 
@@ -65,14 +51,19 @@ namespace ProfileBook.ViewModels
             set
             {
                 SetProperty(ref _entryConfitmPasswordText, value);
-                if (!string.IsNullOrEmpty(_entryConfitmPasswordText))
-                {
-                    ProcessTextChanged();
-                }               
-                else
-                {
-                    ProcessTextChangedEmpty();
-                }               
+                CheckTextInput(_entryConfitmPasswordText);             
+            }
+        }
+
+        private void CheckTextInput(string elementText)
+        {
+            if (string.IsNullOrEmpty(elementText))
+            {
+                MakeButtonInActive();
+            }
+            else
+            {
+                MakeButtonActive();
             }
         }
 
@@ -83,7 +74,7 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _enabledButton, value);
         }
 
-        private void ProcessTextChanged()
+        private void MakeButtonActive()
         {
             if (!string.IsNullOrEmpty(_entryLoginText) &&
                 !string.IsNullOrEmpty(_entryPasswordText) &&
@@ -91,7 +82,7 @@ namespace ProfileBook.ViewModels
                 EnabledButton = true;
         }
 
-        private void ProcessTextChangedEmpty()
+        private void MakeButtonInActive()
         {
             EnabledButton = false;
         }
@@ -114,7 +105,7 @@ namespace ProfileBook.ViewModels
             EntryConfirmPasswordText = string.Empty;
         }
 
-        private bool MakeValidation()
+        private bool IsPassValidation()
         {
             if (!validator.CheckQuantity(_entryLoginText, 4))
             {
@@ -159,7 +150,7 @@ namespace ProfileBook.ViewModels
 
         private void SaveUser()
         {
-            if (MakeValidation())
+            if (IsPassValidation())
             {
                 var isBusy = authentication.CheckLogin(repository, _entryLoginText);
 

@@ -29,14 +29,7 @@ namespace ProfileBook.ViewModels
             set
             {
                 SetProperty(ref _entryLoginText, value);
-                if (!string.IsNullOrEmpty(_entryLoginText))
-                {
-                    ProcessTextChanged();
-                }
-                else
-                {
-                    ProcessTextChangedEmpty();
-                }                   
+                CheckTextInput(_entryLoginText);                   
             }
         }
 
@@ -47,14 +40,7 @@ namespace ProfileBook.ViewModels
             set
             {
                 SetProperty(ref _entryPasswordText, value);
-                if (!string.IsNullOrEmpty(_entryPasswordText))
-                {
-                    ProcessTextChanged();
-                }               
-                else
-                {
-                    ProcessTextChangedEmpty();
-                }                 
+                CheckTextInput(_entryPasswordText);                
             }
         }
 
@@ -71,21 +57,33 @@ namespace ProfileBook.ViewModels
             manager.AplyTheme(themeName);
         }
 
-        private void ProcessTextChanged()
+        private void CheckTextInput(string elementText)
+        {
+            if (string.IsNullOrEmpty(elementText))
+            {
+                MakeButtonInActive();
+            }
+            else
+            {
+                MakeButtonActive();
+            }
+        }
+
+        private void MakeButtonActive()
         {
             if (!string.IsNullOrEmpty(_entryLoginText) &&
                 !string.IsNullOrEmpty(_entryPasswordText))
                 EnabledButton = true;
         }
 
-        private void ProcessTextChangedEmpty()
+        private void MakeButtonInActive()
         {
             EnabledButton = false;
         }
 
         public ICommand GoToSignUpViewCommand => new Command(GoToSignUpView);
 
-        async void GoToSignUpView()
+        private async void GoToSignUpView()
         {
             await navigationService.NavigateAsync($"{nameof(SignUpView)}");
         }

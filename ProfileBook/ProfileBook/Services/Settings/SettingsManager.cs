@@ -28,10 +28,10 @@ namespace ProfileBook.Servises.Settings
             switch (themeName)
             {
                 case "dark":
-                    resource.Add(new darkTheme());
+                    resource.Add(new DarkTheme());
                     break;
                 default:
-                    resource.Add(new lightTheme());
+                    resource.Add(new LightTheme());
                     break;
             }
         }

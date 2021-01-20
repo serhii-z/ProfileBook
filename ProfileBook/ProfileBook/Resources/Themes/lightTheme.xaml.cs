@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace ProfileBook.Resources.Themes
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class lightTheme
+    public partial class LightTheme
     {
-        public lightTheme()
+        public LightTheme()
         {
             InitializeComponent();
         }
