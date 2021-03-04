@@ -1,7 +1,10 @@
 ﻿using Plugin.Settings;
+using Plugin.Settings.Abstractions;
 using Prism;
 using Prism.Ioc;
 using Prism.Unity;
+using ProfileBook.ResourceActivator;
+using ProfileBook.Services.Profile;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
 using ProfileBook.Servises.Profile;
@@ -22,8 +25,10 @@ namespace ProfileBook
         }
 
         public App(IPlatformInitializer initializer = null) : base(initializer) 
-        {
+        {         
         }
+
+        #region --- Overrides ---
 
         protected override void OnStart()
         {
@@ -48,6 +53,10 @@ namespace ProfileBook
             containerRegistry.RegisterForNavigation<SettingsView, SettingsViewModel>();
             containerRegistry.RegisterForNavigation<ModalView, ModalViewModel>();
 
+            //Packages
+            containerRegistry.RegisterInstance<ISettings>(CrossSettings.Current);
+            containerRegistry.RegisterInstance(App.Current.Resources);
+    
             //Services
             containerRegistry.RegisterInstance<IRepository>(Container.Resolve<Repository>());
             containerRegistry.RegisterInstance<IAuthorizationService>(Container.Resolve<AuthorizationService>());
@@ -55,22 +64,28 @@ namespace ProfileBook
             containerRegistry.RegisterInstance<IAuthenticationService>(Container.Resolve<AuthenticationService>());
             containerRegistry.RegisterInstance<IValidator>(Container.Resolve<Validator>());
             containerRegistry.RegisterInstance<IProfileService>(Container.Resolve<ProfileService>());
+            containerRegistry.RegisterInstance<IProfileImageService>(Container.Resolve<ProfileImageService>());
+            containerRegistry.RegisterInstance<IThemeActivator>(Container.Resolve<ThemeActivator>());
+            containerRegistry.RegisterInstance<ICultureActivator>(Container.Resolve<CultureActivator>());
         }
 
         protected override void OnInitialized()
         {
-            var userId = CrossSettings.Current.GetValueOrDefault("id", 0);
+            Container.Resolve<CultureActivator>().AplyCulture();
 
-            GoToView(userId);
+            GoToView();
         }
 
-        private async void GoToView(int userId)
+        #endregion
+
+        #region --- Private methods ---
+
+        private async void GoToView()
         {
+            var userId = CrossSettings.Current.GetValueOrDefault("id", 0);
+            
             if (userId > 0)
             {
-                var repository = Container.Resolve(typeof(Repository)) as Repository;
-                Container.Resolve<SettingsManager>().AplyCulture(repository);
-
                 await NavigationService.NavigateAsync($"/{nameof(NavigationPage)}/{nameof(MainListView)}");
             }
             else
@@ -78,5 +93,7 @@ namespace ProfileBook
                 await NavigationService.NavigateAsync($"/{nameof(NavigationPage)}/{nameof(SignInView)}");
             }
         }
+
+        #endregion
     }
 }

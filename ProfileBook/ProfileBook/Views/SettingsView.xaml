@@ -23,7 +23,7 @@
             </FlexLayout>
             
             <FlexLayout Direction="Row" FlexLayout.Grow="1">
-                <CheckBox WidthRequest="50" IsChecked="{Binding IsDate}"/>
+                <CheckBox WidthRequest="50" IsChecked="{Binding IsTime}"/>
                 <Label Text="{x:Static resource:Resource.SettingsLabelDate}" VerticalTextAlignment="Center" />
             </FlexLayout>
 
@@ -46,7 +46,7 @@
                 <Button TextColor="{DynamicResource buttonTextColor}"
                         Text="{x:Static resource:Resource.SettingsButtonText}" 
                         BackgroundColor="{DynamicResource buttonBackgroundColor}" 
-                        Command="{Binding GoToMainListCommand}"/>
+                        Command="{Binding GoBackButtonTapCommand}"/>
             </FlexLayout>
 
             <FlexLayout FlexLayout.Grow="1"></FlexLayout>

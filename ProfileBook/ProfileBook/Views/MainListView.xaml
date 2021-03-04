@@ -7,18 +7,20 @@
              NavigationPage.HasBackButton="False">
 
     <ContentPage.ToolbarItems>
+        
         <ToolbarItem Name="MenuItem1" 
                      Order="Primary" 
                      Icon="exit.png" 
                      Priority="0" 
-                     Command="{Binding LogOutCommand}" 
+                     Command="{Binding LogOutTapCommand}" 
                      CommandParameter = "0"/>
         <ToolbarItem Name="MenuItem2" 
                      Order="Primary" 
                      Icon="settings.png" 
                      Priority="1" 
-                     Command="{Binding GoToSettingsViewCommand}" 
+                     Command="{Binding SettingsTapCommand}" 
                      CommandParameter = "1"/>
+        
     </ContentPage.ToolbarItems>
 
     <StackLayout BackgroundColor="{DynamicResource pageBackgroundColor}">
@@ -39,10 +41,10 @@
                             <ViewCell>
                                 <ViewCell.ContextActions>
                                     <MenuItem Text="Edit" 
-                                              Command="{Binding Path=BindingContext.EditCommand, Source={x:Reference listView}}" 
+                                              Command="{Binding Path=BindingContext.EditTapCommand, Source={x:Reference listView}}" 
                                               CommandParameter="{Binding .}" />
                                     <MenuItem Text="Delete" 
-                                              Command="{Binding Path=BindingContext.DeleteCommand, Source={x:Reference listView}}" 
+                                              Command="{Binding Path=BindingContext.DeleteTapCommand, Source={x:Reference listView}}" 
                                               CommandParameter="{Binding .}" />
                                 </ViewCell.ContextActions>
                                 <ViewCell.View>
@@ -55,7 +57,7 @@
                                                    FontSize="18" 
                                                    FontAttributes="Bold"/>
                                             <Label Text="{Binding Name}" />
-                                            <Label Text="{Binding StartDate}" />
+                                            <Label Text="{Binding CreationTime}" />
                                         </StackLayout>
                                     </StackLayout>
                                 </ViewCell.View>
@@ -79,7 +81,7 @@
                         AbsoluteLayout.LayoutFlags="PositionProportional"
                         AbsoluteLayout.LayoutBounds="1.0,1.0,-1,-1"
                         Margin="0,0,20,40"
-                        Command="{Binding AddCommand}">
+                        Command="{Binding AddTapCommand}">
                 </ImageButton>
                 
             </AbsoluteLayout>

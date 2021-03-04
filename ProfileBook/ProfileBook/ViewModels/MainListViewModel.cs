@@ -1,11 +1,8 @@
 ﻿using Prism.Navigation;
 using ProfileBook.Models;
-using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
 using ProfileBook.Servises.Profile;
-using ProfileBook.Servises.Repository;
 using ProfileBook.Servises.Settings;
-using ProfileBook.Validators;
 using ProfileBook.Views;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,18 +10,44 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using ProfileBook.Properties;
 using Prism.Services;
+using ProfileBook.ResourceActivator;
+using ProfileBook.Resources.Themes;
+using System.ComponentModel;
 
 namespace ProfileBook.ViewModels
 {
     public class MainListViewModel : BaseViewModel
     {
-        public MainListViewModel(INavigationService navigationService, IRepository repository, 
-            ISettingsManager manager, IAuthorizationService authorization, 
-            IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
-        {            
+        private ISettingsManager _settingsManager;
+        private IProfileService _profileService;
+        private IAuthorizationService _authorizationService;
+        private IPageDialogService _pageDialog;
+        private ResourceDictionary _resourceDictionary;
+        private IThemeActivator _themeActivator;
+        private ICultureActivator _cultureActivator;
+        public MainListViewModel(INavigationService navigationService,
+            ISettingsManager settingsManager, IAuthorizationService authorizationService,  
+            IProfileService profileService, IPageDialogService pageDialog, 
+            ResourceDictionary resourceDictionary, IThemeActivator themeActivator,
+            ICultureActivator cultureActivator) :
+            base(navigationService)
+        {
+            _settingsManager = settingsManager;
+            _profileService = profileService;
+            _authorizationService = authorizationService;
+            _pageDialog = pageDialog;
+            _resourceDictionary = resourceDictionary;
+            _themeActivator = themeActivator;
+            _cultureActivator = cultureActivator;
         }
+
+        #region --- Public Properties ---
+
+        public ICommand DeleteTapCommand => new Command(OnDeleteTap);
+        public ICommand LogOutTapCommand => new Command(OnLogOutTap);
+        public ICommand SettingsTapCommand => new Command(OnSettingsTap);
+        public ICommand AddTapCommand => new Command(OnAddTap);
+        public ICommand EditTapCommand => new Command(OnEditTap);
 
         private string _title;
         public string Title
@@ -33,8 +56,8 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _title, value);
         }
 
-        private ObservableCollection<Profile> _items;
-        public ObservableCollection<Profile> Items
+        private ObservableCollection<ProfileModel> _items;
+        public ObservableCollection<ProfileModel> Items
         {
             get { return _items; }
             set => SetProperty(ref _items, value);
@@ -51,56 +74,31 @@ namespace ProfileBook.ViewModels
         public object SelectedItem
         {
             get => _selectedItem;
-            set
+            set => SetProperty(ref _selectedItem, value);
+        }
+
+        #endregion
+
+        #region --- Private Methods ---
+
+        private List<ProfileModel> GetProfiles()
+        {
+            var sortingName = _settingsManager.SortingName;
+            var profiles = _profileService.GetAllProfiles(_authorizationService.GetAuthorizedUserId());
+
+            if (!string.IsNullOrEmpty(sortingName))
             {
-                SetProperty(ref _selectedItem, value);
-                if (_selectedItem == value)
-                {
-                    GoToModalView();
-                }
+                profiles = _profileService.Sort(_settingsManager.SortingName);
             }
+
+            return profiles;
         }
 
-        private async void GoToModalView()
+        private void ShowProfiles(List<ProfileModel> profiles)
         {
-            var item = _selectedItem as Profile;
-            var parameters = new NavigationParameters();
-            parameters.Add("profile", item);
-
-            await navigationService.NavigateAsync($"{nameof(ModalView)}", parameters, useModalNavigation: true);
-        }
-
-        private List<Profile> GetProfilesDefault(int userId)
-        {
-            return profileService.GetProfiles(repository, userId);
-        }
-
-        private List<Profile> GetSortedProfiles(int userId, string sortingName)
-        {
-            var sql = manager.CreateSortRequest(userId, sortingName);
-
-            return manager.Sort(repository, sql);
-        }
-
-        private List<Profile> GetProfiles()
-        {
-            var sortingName = manager.GetSortingName(repository);
-            
-            if (sortingName == string.Empty)
-            {
-                return GetProfilesDefault(authorization.GetUserId());
-            }
-            else
-            {
-                return GetSortedProfiles(authorization.GetUserId(), sortingName);
-            }
-        }
-
-        private void ShowProfiles(List<Profile> profiles)
-        {          
             if (profiles.Count > 0)
             {
-                Items = new ObservableCollection<Profile>();
+                Items = new ObservableCollection<ProfileModel>();
 
                 foreach (var item in profiles)
                 {
@@ -115,81 +113,102 @@ namespace ProfileBook.ViewModels
             }           
         }
 
-        private void InitializeSettings()
+        private void InitSettings()
         {
-            manager.AplyTheme(manager.GetThemeName(repository));
+            _themeActivator.AplyTheme(_resourceDictionary);
 
             Title = Resource.MainListTitle;
         }
 
-        public ICommand DeleteCommand => new Command(Delete);
-
-        private async void Delete(object ob)
+        private void CancelAuthorization()
         {
-            var result = await App.Current.MainPage.DisplayAlert(Properties.Resource.AlertTitle, 
-                Properties.Resource.MainListAlertDelete, Properties.Resource.MainListAlertDeleteYes, 
-                Properties.Resource.MainListAlertDeleteNo);
+            _authorizationService.AddOrUpdateAuthorization(0);
+            _settingsManager.ThemeName = nameof(LightTheme);
+            _themeActivator.AplyTheme(_resourceDictionary);
+            _cultureActivator.AplyCulture();
+        }
 
-            if (result)
+        #endregion
+
+        #region --- Private Helpers ---       
+
+        private async void OnDeleteTap(object ob)
+        {
+            bool isDialogYes = await _pageDialog.DisplayAlertAsync(Resource.AlertTitle,
+                Resource.MainListAlertDelete, Resource.MainListAlertDeleteYes,
+                Resource.MainListAlertDeleteNo);
+
+            if (isDialogYes)
             {
-                var profile = ob as Profile;
-                var answer = profileService.DeleteProfile(repository, profile);
+                var profile = ob as ProfileModel;
+                var answer = _profileService.DeleteProfile(profile);
 
                 if (answer == 1)
                 {
-                    Items.Remove(profile);                   
+                    Items.Remove(profile);
                 }
 
                 IsNoProfiles = Items.Count > 0 ? false : true;
             }
         }
 
-        public ICommand LogOutCommand => new Command(CancelAuthorization);
-
-        private void CancelAuthorization()
+        private async void OnLogOutTap()
         {
-            authorization.ExecuteAuthorization(0);
-            manager.AplyTheme(string.Empty);
-            manager.AplyCulture(repository);
-            GoToSignInView();
-        }
+            CancelAuthorization();
 
-        private async void GoToSignInView()
-        {
             await navigationService.NavigateAsync($"{nameof(SignInView)}");
         }
 
-        public ICommand GoToSettingsViewCommand => new Command(GoToSettingsView);
-
-        private async void GoToSettingsView()
+        private async void OnSettingsTap()
         {
             await navigationService.NavigateAsync($"{nameof(SettingsView)}");
         }
 
-        public ICommand EditCommand => new Command(GoToEditViewAsync);
-
-        private async void GoToEditViewAsync(object ob)
+        private async void OnAddTap()
         {
-            var profile = ob as Profile;
+            await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}");
+        }
+
+        private async void OnEditTap(object ob)
+        {
+            var profile = ob as ProfileModel;
             var parameters = new NavigationParameters();
             parameters.Add("profile", profile);
 
             await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}", parameters);
         }
 
-        public ICommand AddCommand => new Command(GoToAddView);
-
-        private async void GoToAddView()
+        private async void OnSelectedItemTap()
         {
-            await navigationService.NavigateAsync($"{nameof(AddEditProfileView)}");
+            var item = _selectedItem as ProfileModel;
+            var parameters = new NavigationParameters();
+            parameters.Add("profile", item);
+
+            await navigationService.NavigateAsync($"{nameof(ModalView)}", parameters, useModalNavigation: true);
+        }
+
+        #endregion
+
+        #region --- Overrides ---
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs args)
+        {
+            base.OnPropertyChanged(args);
+
+            if (args.PropertyName == nameof(SelectedItem))
+            {
+                OnSelectedItemTap();
+            }
         }
 
         public override void OnNavigatedTo(INavigationParameters parameters)
         {
-            InitializeSettings();
+            InitSettings();
 
             var profiles = GetProfiles();
             ShowProfiles(profiles);
         }
+
+        #endregion
     }
 }

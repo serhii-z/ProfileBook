@@ -25,7 +25,7 @@
 
             <FlexLayout FlexLayout.Grow="1" Direction="Column" JustifyContent="Center">
                 <Button Text="{x:Static resource:Resource.SignUpButtonText}" 
-                        Command="{Binding SignUpCommand}" 
+                        Command="{Binding SignUpTapCommand}" 
                         IsEnabled="{Binding EnabledButton}" 
                         BackgroundColor="{DynamicResource buttonBackgroundColor}" 
                         TextColor="{DynamicResource buttonTextColor}"/>

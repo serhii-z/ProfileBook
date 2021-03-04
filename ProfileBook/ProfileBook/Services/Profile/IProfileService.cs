@@ -1,16 +1,14 @@
-﻿using ProfileBook.Servises.Repository;
+﻿using ProfileBook.Models;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ProfileBook.Servises.Profile
 {
     public interface IProfileService
     {
-        Task<string> GetPathFromGalary();
-        Task<string> GetPathAfterCamera();
-        int SaveProfile(IRepository repository, Models.Profile profile);
-        int UpdateProfile(IRepository repository, Models.Profile profile);
-        int DeleteProfile(IRepository repository, Models.Profile profile);
-        List<Models.Profile> GetProfiles(IRepository repository, int userId);     
+        int AddProfile(ProfileModel profile);
+        int UpdateProfile(ProfileModel profile);
+        int DeleteProfile(ProfileModel profile);
+        List<ProfileModel> GetAllProfiles(int userId);
+        List<ProfileModel> Sort(string sortingName);
     }
 }

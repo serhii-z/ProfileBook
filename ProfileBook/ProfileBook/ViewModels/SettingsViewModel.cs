@@ -1,11 +1,8 @@
 ﻿using Prism.Navigation;
-using Prism.Services;
-using ProfileBook.Servises.Authentication;
-using ProfileBook.Servises.Authorization;
-using ProfileBook.Servises.Profile;
-using ProfileBook.Servises.Repository;
+using ProfileBook.ResourceActivator;
+using ProfileBook.Resources.Themes;
 using ProfileBook.Servises.Settings;
-using ProfileBook.Validators;
+using System.ComponentModel;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -13,137 +10,69 @@ namespace ProfileBook.ViewModels
 {
     public class SettingsViewModel : BaseViewModel
     {
-        public SettingsViewModel(INavigationService navigationService, IRepository repository, 
-            ISettingsManager manager, IAuthorizationService authorization, 
-            IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
-        {         
+        private ISettingsManager _settingsManager;
+        private ICultureActivator _cultureActivator;
+        public SettingsViewModel(INavigationService navigationService, ISettingsManager settingsManager,
+            ICultureActivator cultureActivator) :
+            base(navigationService)
+        {
+            _settingsManager = settingsManager;
+            _cultureActivator = cultureActivator;
         }
+
+        #region --- Public Properties ---
+
+        public ICommand GoBackButtonTapCommand => new Command(OnGoBackButtonTap);
 
         private bool _isName;
         public bool IsName
         {
             get => _isName;
-            set
-            {
-                SetProperty(ref _isName, value);
-                if (_isName)
-                {
-                    IsNickName = false;
-                    IsDate = false;
-                    manager.AddOrUpdateSorting(repository, "Name");
-                }
-                else
-                {
-                    manager.AddOrUpdateSorting(repository, string.Empty);
-                }
-            }
+            set => SetProperty(ref _isName, value);
         }
 
         private bool _isNickName;
         public bool IsNickName
         {
             get => _isNickName;
-            set
-            {
-                SetProperty(ref _isNickName, value);
-                if (_isNickName)
-                {
-                    IsName = false;
-                    IsDate = false;
-                    manager.AddOrUpdateSorting(repository, "NickName");
-                }
-                else
-                {
-                    manager.AddOrUpdateSorting(repository, string.Empty);
-                }
-            }
+            set => SetProperty(ref _isNickName, value);
         }
 
-        private bool _isDate;
-        public bool IsDate
+        private bool _isTime;
+        public bool IsTime
         {
-            get => _isDate;
-            set
-            {
-                SetProperty(ref _isDate, value);
-                if (_isDate)
-                {
-                    IsName = false;
-                    IsNickName = false;
-                    manager.AddOrUpdateSorting(repository, "StartDate");
-                }
-                else
-                {
-                    manager.AddOrUpdateSorting(repository, string.Empty);
-                }
-            }
+            get => _isTime;
+            set => SetProperty(ref _isTime, value);
         }
 
         private bool _isDark;
         public bool IsDark
         {
             get => _isDark;
-            set
-            {
-                SetProperty(ref _isDark, value);
-                if (_isDark)
-                {
-                    manager.AddOrUpdateTheme(repository, "dark");
-                }
-                else
-                {
-                    manager.AddOrUpdateTheme(repository, string.Empty);
-                }             
-            }
+            set => SetProperty(ref _isDark, value);
         }
 
         private bool _isUkrainian;
         public bool IsUkrainian
         {
             get => _isUkrainian;
-            set
-            {
-                SetProperty(ref _isUkrainian, value);
-                if (_isUkrainian)
-                {
-                    IsRussian = false;
-                    manager.AddOrUpdateCulture(repository, "uk");
-                }
-                else
-                {
-                    manager.AddOrUpdateCulture(repository, string.Empty);
-                }
-                manager.AplyCulture(repository);
-            }
+            set => SetProperty(ref _isUkrainian, value);
         }
 
         private bool _isRussian;
         public bool IsRussian
         {
             get => _isRussian;
-            set
-            {
-                SetProperty(ref _isRussian, value);
-                if (_isRussian)
-                {
-                    IsUkrainian = false;
-                    manager.AddOrUpdateCulture(repository, "ru");
-                }
-                else
-                {                  
-                    manager.AddOrUpdateCulture(repository, string.Empty);
-                }
-                manager.AplyCulture(repository);
-            }
+            set => SetProperty(ref _isRussian, value);
         }
 
-        private void ActivateSorting()
-        {
-            string sortingName = manager.GetSortingName(repository);
+        #endregion
 
-            switch (sortingName)
+        #region --- Private Methods ---
+
+        private void ActivateControlsSorting()
+        {
+            switch (_settingsManager.SortingName)
             {
                 case "Name":
                     IsName = true;
@@ -151,29 +80,25 @@ namespace ProfileBook.ViewModels
                 case "NickName":
                     IsNickName = true;
                     break;
-                case "StartDate":
-                    IsDate = true;
+                case "CreationTime":
+                    IsTime = true;
                     break;
             }
         }
 
-        private void ActivateTheme()
+        private void ActivateControlsTheme()
         {
-            string themeName = manager.GetThemeName(repository);
-
-            switch (themeName)
+            switch (_settingsManager.ThemeName)
             {
-                case "dark":
+                case nameof(DarkTheme):
                     IsDark = true;
                     break;
             }
         }
 
-        private void ActivateCulture()
+        private void ActivateControlsCulture()
         {
-            string cultureName = manager.GetCultureName(repository);
-
-            switch (cultureName)
+            switch (_settingsManager.CultureName)
             {
                 case "uk":
                     IsUkrainian = true;
@@ -184,18 +109,114 @@ namespace ProfileBook.ViewModels
             }
         }
 
-        public ICommand GoToMainListCommand => new Command(GotoMainList);
+        private void SaveSorting(bool isName, bool isNickName, bool isTime, string sortingName)
+        {
+            IsName = isName;
+            IsNickName = isNickName;
+            IsTime = isTime;
+            _settingsManager.SortingName = sortingName;
+        }
 
-        private async void GotoMainList()
+        #endregion
+
+        #region --- Private Helpers ---
+        private async void OnGoBackButtonTap()
         {
             await navigationService.GoBackAsync();
         }
 
+        #endregion
+
+        #region --- Overrides ---
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs args)
+        {
+            base.OnPropertyChanged(args);
+
+            if(args.PropertyName == nameof(IsName))
+            {
+                if (_isName)
+                {
+                    SaveSorting(_isName, false, false, "Name");
+                }
+                else
+                {
+                    _settingsManager.SortingName = string.Empty;
+                }
+            }
+
+            if (args.PropertyName == nameof(IsNickName))
+            {
+                if (_isNickName)
+                {
+                    SaveSorting(false, _isNickName, false, "NickName");
+                }
+                else
+                {
+                    _settingsManager.SortingName = string.Empty;
+                }
+            }
+
+            if (args.PropertyName == nameof(IsTime))
+            {
+                if (_isTime)
+                {
+                    SaveSorting(false, false, _isTime, "CreationTime");
+                }
+                else
+                {
+                    _settingsManager.SortingName = string.Empty;
+                }
+            }
+
+            if (args.PropertyName == nameof(IsDark))
+            {
+                if (_isDark)
+                {
+                    _settingsManager.ThemeName = nameof(DarkTheme);
+                }
+                else
+                {
+                    _settingsManager.ThemeName = string.Empty;
+                }
+            }
+
+            if (args.PropertyName == nameof(IsUkrainian))
+            {
+                if (_isUkrainian)
+                {
+                    IsRussian = false;
+                    _settingsManager.CultureName = "uk";
+                }
+                else
+                {
+                    _settingsManager.CultureName = string.Empty;
+                }
+                _cultureActivator.AplyCulture();
+            }
+
+            if (args.PropertyName == nameof(IsRussian))
+            {
+                if (_isRussian)
+                {
+                    IsUkrainian = false;
+                    _settingsManager.CultureName = "ru";
+                }
+                else
+                {
+                    _settingsManager.CultureName = string.Empty;
+                }
+                _cultureActivator.AplyCulture();
+            }
+        }
+
         public override void OnNavigatedTo(INavigationParameters parameters)
         {
-            ActivateSorting();
-            ActivateCulture();
-            ActivateTheme();
+            ActivateControlsSorting();
+            ActivateControlsCulture();
+            ActivateControlsTheme();
         }
+
+        #endregion
     }
 }

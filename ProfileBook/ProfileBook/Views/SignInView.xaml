@@ -23,7 +23,7 @@
 
             <FlexLayout FlexLayout.Grow="1" Direction="Column" JustifyContent="Center">
                 <Button Text="{x:Static resource:Resource.SignInButtonText}" 
-                        Command="{Binding LogInCommand}" 
+                        Command="{Binding LogInTapCommand}" 
                         IsEnabled="{Binding EnabledButton}" 
                         BackgroundColor="{DynamicResource buttonBackgroundColor}" 
                         TextColor="{DynamicResource buttonTextColor}"/>
@@ -33,7 +33,7 @@
                        TextColor="Blue" 
                        TextDecorations="Underline">
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding GoToSignUpViewCommand}"/>
+                        <TapGestureRecognizer Command="{Binding SignUpTapCommand}"/>
                     </Label.GestureRecognizers>
                 </Label>
             </FlexLayout>

@@ -1,24 +1,24 @@
-﻿using Plugin.Settings;
-using ProfileBook.Models;
-using ProfileBook.Servises.Repository;
+﻿using Plugin.Settings.Abstractions;
 
 namespace ProfileBook.Servises.Authorization
 {
     public class AuthorizationService : IAuthorizationService
     {
-        public int SaveUser(IRepository repository, User user)
+        private ISettings _crossSettings;
+
+        public AuthorizationService(ISettings crossSettings)
         {
-            return repository.InsertItem(user).Result;
+            _crossSettings = crossSettings;
         }
 
-        public void ExecuteAuthorization(int id)
+        public void AddOrUpdateAuthorization(int id)
         {
-            CrossSettings.Current.AddOrUpdateValue("id", id);
+             _crossSettings.AddOrUpdateValue("id", id);
         }
 
-        public int GetUserId()
+        public int GetAuthorizedUserId()
         {
-            return CrossSettings.Current.GetValueOrDefault("id", 0);
+            return _crossSettings.GetValueOrDefault("id", 0);
         }
     }
 }

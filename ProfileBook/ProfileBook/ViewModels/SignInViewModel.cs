@@ -2,25 +2,45 @@
 using Prism.Services;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
-using ProfileBook.Servises.Profile;
-using ProfileBook.Servises.Repository;
 using ProfileBook.Servises.Settings;
-using ProfileBook.Validators;
 using ProfileBook.Views;
 using System.Windows.Input;
 using Xamarin.Forms;
+using ProfileBook.Properties;
+using ProfileBook.ResourceActivator;
 
 namespace ProfileBook.ViewModels
 {
     public class SignInViewModel : BaseViewModel
     {
-        public SignInViewModel(INavigationService navigationService, IRepository repository, 
-            ISettingsManager manager, IAuthorizationService authorization, 
-            IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
+        private ISettingsManager _settingsManager;
+        private IAuthenticationService _authenticationService;
+        private IAuthorizationService _authorizationService;
+        private IPageDialogService _pageDialog;
+        private ResourceDictionary _resourceDictionary;
+        private ICultureActivator _cultureActivator;
+        private IThemeActivator _themeActivator;
+
+        public SignInViewModel(INavigationService navigationService,
+            ISettingsManager settingsManager, IAuthorizationService authorizationService, 
+            IAuthenticationService authenticationService, IPageDialogService pageDialog, 
+            ResourceDictionary resourceDictionary, ICultureActivator cultureActivator, 
+            IThemeActivator themeActivator) :
+            base(navigationService)
         {
+            _settingsManager = settingsManager;
+            _authenticationService = authenticationService;
+            _authorizationService = authorizationService;
+            _pageDialog = pageDialog;
+            _resourceDictionary = resourceDictionary;
+            _cultureActivator = cultureActivator;
+            _themeActivator = themeActivator;
         }
+
+        #region --- Public Properties ---
+        public ICommand LogInTapCommand => new Command(OnLogInTap);
+        public ICommand SignUpTapCommand => new Command(OnSignUpTap);
+
 
         private string _entryLoginText;
         public string EntryLoginText
@@ -51,11 +71,9 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _enabledButton, value);
         }
 
-        private void InitializeSettings()
-        {
-            var themeName = manager.GetThemeName(repository);
-            manager.AplyTheme(themeName);
-        }
+        #endregion
+
+        #region --- Private Methods ---
 
         private void CheckTextInput(string elementText)
         {
@@ -81,42 +99,51 @@ namespace ProfileBook.ViewModels
             EnabledButton = false;
         }
 
-        public ICommand GoToSignUpViewCommand => new Command(GoToSignUpView);
+        private bool IsAuthorization()
+        {
+            var userId = _authenticationService.VerifyUser(_entryLoginText, _entryPasswordText);
 
-        private async void GoToSignUpView()
+            if (userId > 0)
+            {
+                _authorizationService.AddOrUpdateAuthorization(userId);
+                return true;
+            }
+            else
+            {
+                ShowAlert(Resource.SignInAlert);
+                EntryLoginText = string.Empty;
+                EntryPasswordText = string.Empty;
+                return false;
+            }
+        }
+
+        private async void ShowAlert(string message)
+        {
+            await _pageDialog.DisplayAlertAsync(Resource.AlertTitle, message, "OK");
+        }
+
+        #endregion
+
+        #region --- Private Helpers ---
+
+        private async void OnLogInTap()
+        {
+            if (IsAuthorization())
+            {
+                _cultureActivator.AplyCulture();
+
+                await navigationService.NavigateAsync($"{nameof(MainListView)}");
+            }
+        }
+
+        private async void OnSignUpTap()
         {
             await navigationService.NavigateAsync($"{nameof(SignUpView)}");
         }
 
-        public ICommand LogInCommand => new Command(VerifyUser);
+        #endregion
 
-        private void VerifyUser()
-        {
-            var userId = authentication.VerifyUser(repository, _entryLoginText, _entryPasswordText);
-            MakeAuthorization(userId);
-        }
-
-        private async void MakeAuthorization(int userId)
-        {
-            if (userId > 0)
-            {
-                authorization.ExecuteAuthorization(userId);
-                GoToMainListView(userId);
-            }
-            else
-            {
-                await pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, Properties.Resource.SignInAlert, "OK");
-                EntryLoginText = string.Empty;
-                EntryPasswordText = string.Empty;
-            }
-        }
-
-        private async void GoToMainListView(int id)
-        {
-            manager.AplyCulture(repository);
-
-            await navigationService.NavigateAsync($"{nameof(MainListView)}");
-        }
+        #region --- Overrides ---
 
         public override void OnNavigatedTo(INavigationParameters parameters)
         {
@@ -128,7 +155,9 @@ namespace ProfileBook.ViewModels
 
         public override void Initialize(INavigationParameters parameters)
         {
-            InitializeSettings();
+            _themeActivator.AplyTheme(_resourceDictionary);
         }
+
+        #endregion
     }
 }

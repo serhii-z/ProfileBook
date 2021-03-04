@@ -5,30 +5,44 @@ namespace ProfileBook.Servises.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
-        public int VerifyUser(IRepository repository, string login, string password)
+        private IRepository _repository;
+
+        public AuthenticationService(IRepository repository)
         {
-            string sql = $"SELECT * FROM Users WHERE Login='{login}' AND Password='{password}'";
-            var user = repository.FindItem<User>(sql).Result;
-
-            if(user != null)
-            {
-                return user.Id;
-            }
-
-            return 0;
+            _repository = repository;
         }
 
-        public bool CheckLogin(IRepository repository, string login)
+        public int VerifyUser(string login, string password)
         {
-            string sql = $"SELECT * FROM Users WHERE Login='{login}'";
-            var user = repository.FindItem<User>(sql).Result;
+            string sql = $"SELECT * FROM Users WHERE Login='{login}' AND Password='{password}'";
+            var user = _repository.FindWithQueryAsync<UserModel>(sql).Result;
 
-            if (user != null)
+            if(user == null)
             {
-                return true;
+                return 0;
             }
 
-            return false;
+            return user.Id;
+        }
+
+        public bool IsLogin(string login)
+        {
+            string sql = $"SELECT * FROM Users WHERE Login='{login}'";
+            var user = _repository.FindWithQueryAsync<UserModel>(sql).Result;
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public int AddUser(UserModel user)
+        {
+            var result = _repository.InsertAsync(user).Result;
+
+            return result;
         }
     }
 }

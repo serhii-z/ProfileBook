@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using ProfileBook.Models;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,39 +9,45 @@ namespace ProfileBook.Servises.Repository
 {
     public class Repository : IRepository
     {
-        private SQLiteAsyncConnection _database;
-        private const string DATABASE_NAME = "profileBook.db";
-        private string DatabasePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
-            DATABASE_NAME);
+        private Lazy<SQLiteAsyncConnection> _database;
 
         public Repository()
         {
-            _database = new SQLiteAsyncConnection(DatabasePath);
+            _database = new Lazy<SQLiteAsyncConnection>(() =>
+            {
+                var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "profilebook.db");
+                var database = new SQLiteAsyncConnection(path);
+
+                database.CreateTableAsync<UserModel>();
+                database.CreateTableAsync<ProfileModel>();
+
+                return database;
+            });
         }
 
-        public async Task<int> InsertItem<T>(T item)
+        public Task<int> InsertAsync<T>(T item) where T: IEntityBase, new()
         {
-            return await _database.InsertAsync(item).ConfigureAwait(false);
+            return _database.Value.InsertAsync(item);
         }
 
-        public async Task<int> UpdateItem<T>(T item)
+        public Task<int> UpdateAsync<T>(T item) where T : IEntityBase, new()
         {
-            return await _database.UpdateAsync(item).ConfigureAwait(false);
+            return _database.Value.UpdateAsync(item);
         }
 
-        public async Task<int> DeleteItem<T>(T item)
+        public Task<int> DeleteAsync<T>(T item) where T : IEntityBase, new()
         {
-            return await _database.DeleteAsync(item).ConfigureAwait(false);
+            return _database.Value.DeleteAsync(item);
         }
 
-        public async Task<T> FindItem<T>(string sql) where T : new()
+        public Task<T> FindWithQueryAsync<T>(string sql) where T : IEntityBase, new()
         {
-            return await _database.FindWithQueryAsync<T>(sql).ConfigureAwait(false);
+            return _database.Value.FindWithQueryAsync<T>(sql);
         }
 
-        public async Task<List<T>> ChooseItems<T>(string sql) where T : new()
+        public Task<List<T>> QueryAsync<T>(string sql) where T : IEntityBase, new()
         {
-            return await _database.QueryAsync<T>(sql).ConfigureAwait(false);
+            return _database.Value.QueryAsync<T>(sql);
         }
     }
 }

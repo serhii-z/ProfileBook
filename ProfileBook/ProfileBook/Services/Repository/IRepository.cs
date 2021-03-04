@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using ProfileBook.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ProfileBook.Servises.Repository
 {
     public interface IRepository
     {
-        Task<int> InsertItem<T>(T item);
-        Task<int> UpdateItem<T>(T item);
-        Task<int> DeleteItem<T>(T item);
-        Task<T> FindItem<T>(string sql) where T : new();
-        Task<List<T>> ChooseItems<T>(string sql) where T : new();
+        Task<int> InsertAsync<T>(T item) where T : IEntityBase, new();
+        Task<int> UpdateAsync<T>(T item) where T : IEntityBase, new();
+        Task<int> DeleteAsync<T>(T item) where T : IEntityBase, new();
+        Task<T> FindWithQueryAsync<T>(string sql) where T : IEntityBase, new();
+        Task<List<T>> QueryAsync<T>(string sql) where T : IEntityBase, new();
     }
 }

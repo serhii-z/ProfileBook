@@ -1,72 +1,65 @@
-﻿using Plugin.Media;
-using Plugin.Media.Abstractions;
+﻿using ProfileBook.Models;
 using ProfileBook.Servises.Repository;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace ProfileBook.Servises.Profile
 {
     public class ProfileService : IProfileService
     {
-        public async Task<string> GetPathFromGalary()
+        private IRepository _repository;
+        private List<ProfileModel> _profiles;
+
+        public ProfileService(IRepository repository)
         {
-            if (CrossMedia.Current.IsPickPhotoSupported)
-            {
-                MediaFile photo = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
-                {
-                    PhotoSize = PhotoSize.Small
-                });
-
-                if(photo != null)
-                {
-                    return photo.Path;
-                }                
-            }
-
-            return string.Empty;
+            _repository = repository;
+            _profiles = new List<ProfileModel>();
         }
 
-        public async Task<string> GetPathAfterCamera()
+
+        public int AddProfile(ProfileModel profile)
         {
-            if (CrossMedia.Current.IsCameraAvailable && CrossMedia.Current.IsTakePhotoSupported)
-            {
-                MediaFile file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
-                {
-                    SaveToAlbum = true,
-                    PhotoSize = PhotoSize.Small,
-                    DefaultCamera = CameraDevice.Rear,
-                    Name = $"{DateTime.Now.ToString("dd/MM/yyyy_hh/mm/ss")}.jpg"
-                });
+            var result = _repository.InsertAsync(profile).Result;
 
-                if(file != null)
-                {
-                    return file.Path;
-                }
-            }
-
-            return string.Empty;
+            return result;
         }
 
-        public int SaveProfile(IRepository repository, Models.Profile profile)
+        public int UpdateProfile(ProfileModel profile)
         {
-            return repository.InsertItem(profile).Result;
+            var result = _repository.UpdateAsync(profile).Result;
+
+            return result;
         }
 
-        public int UpdateProfile(IRepository repository, Models.Profile profile)
+        public int DeleteProfile(ProfileModel profile)
         {
-            return repository.UpdateItem(profile).Result;
+            var result = _repository.DeleteAsync(profile).Result;
+
+            return result;
         }
 
-        public int DeleteProfile(IRepository repository, Models.Profile profile)
-        {
-            return repository.DeleteItem(profile).Result;
-        }
-
-        public List<Models.Profile> GetProfiles(IRepository repository, int userId)
+        public List<ProfileModel> GetAllProfiles(int userId)
         {
             string sql = $"SELECT * FROM Profiles WHERE UserId='{userId}'";
-            return repository.ChooseItems<Models.Profile>(sql).Result;
+            _profiles = _repository.QueryAsync<ProfileModel>(sql).Result;
+
+            return _profiles;
+        }
+
+        public List<ProfileModel> Sort(string sortingName)
+        {
+            switch (sortingName)
+            {
+                case "Name":
+                    return _profiles.OrderBy(x => x.Name).ToList();
+                case "NickName":
+                    return _profiles.OrderBy(x => x.NickName).ToList();
+                case "CreationTime":
+                    return _profiles.OrderBy(x => x.CreationTime).ToList();
+                default:
+                    throw new Exception();
+            }
         }
     }
 }

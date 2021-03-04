@@ -3,9 +3,9 @@
 namespace ProfileBook.Models
 {
     [Table("Users")]
-    public class User
+    public class UserModel : IEntityBase
     {
-        [PrimaryKey, AutoIncrement, Column("_id")]
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         [Unique]

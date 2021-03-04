@@ -3,24 +3,33 @@ using Prism.Services;
 using ProfileBook.Models;
 using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
-using ProfileBook.Servises.Profile;
-using ProfileBook.Servises.Repository;
-using ProfileBook.Servises.Settings;
 using ProfileBook.Validators;
 using System.Windows.Input;
 using Xamarin.Forms;
+using ProfileBook.Properties;
 
 namespace ProfileBook.ViewModels
 {
     public class SignUpViewModel : BaseViewModel
     {
-        public SignUpViewModel(INavigationService navigationService, IRepository repository, 
-            ISettingsManager manager, IAuthorizationService authorization, 
-            IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
+        private IAuthorizationService _authorizationService;
+        private IAuthenticationService _authenticationService;
+        private IValidator _validator;
+        private IPageDialogService _pageDialog;
+
+        public SignUpViewModel(INavigationService navigationService, IAuthorizationService authorizationService, 
+            IAuthenticationService authenticationService, IValidator validator, IPageDialogService pageDialog) :
+            base(navigationService)
         {
+            _authorizationService = authorizationService;
+            _authenticationService = authenticationService;
+            _validator = validator;
+            _pageDialog = pageDialog;
         }
+
+        #region --- Public Properties ---
+
+        public ICommand SignUpTapCommand => new Command(OnSignUpTap);
 
         private string _entryLoginText;
         public string EntryLoginText
@@ -55,6 +64,17 @@ namespace ProfileBook.ViewModels
             }
         }
 
+        private bool _enabledButton = false;
+        public bool EnabledButton
+        {
+            get => _enabledButton;
+            set => SetProperty(ref _enabledButton, value);
+        }
+
+        #endregion
+
+        #region ---Private Methods ---
+
         private void CheckTextInput(string elementText)
         {
             if (string.IsNullOrEmpty(elementText))
@@ -65,13 +85,6 @@ namespace ProfileBook.ViewModels
             {
                 MakeButtonActive();
             }
-        }
-
-        private bool _enabledButton = false;
-        public bool EnabledButton
-        {
-            get => _enabledButton;
-            set => SetProperty(ref _enabledButton, value);
         }
 
         private void MakeButtonActive()
@@ -87,9 +100,50 @@ namespace ProfileBook.ViewModels
             EnabledButton = false;
         }
 
-        private User CreateUser()
+        private bool IsPassValidation()
         {
-            var user = new User()
+            if (!_validator.IsQuantityCorrect(_entryLoginText, 4))
+            {
+                ShowAlert(Resource.ValidatorNumberLogin);
+                ClearEntries();
+                return false;
+            }
+            if (_validator.IsFirstSimbolDigit(_entryLoginText))
+            {
+                ShowAlert(Resource.ValidatorFirst);
+                ClearEntries();
+                return false;
+            }
+            if (!_validator.IsQuantityCorrect(_entryPasswordText, 8))
+            {
+                ShowAlert(Resource.ValidatorNumberPassword);
+                ClearEntries();
+                return false;
+            }
+            if (!_validator.IsAvailability(_entryPasswordText))
+            {
+                ShowAlert(Resource.ValidatorMust);
+                ClearEntries();
+                return false;
+            }
+            if (!_validator.IsPasswordsEqual(_entryPasswordText, _entryConfitmPasswordText))
+            {
+                ShowAlert(Resource.ValidatorPassword);
+                ClearEntries();
+                return false;
+            }
+
+            return true;
+        }
+
+        private async void ShowAlert(string message)
+        {
+            await _pageDialog.DisplayAlertAsync(Resource.AlertTitle, message, "OK");
+        }
+
+        private UserModel CreateUser()
+        {
+            var user = new UserModel()
             {
                 Login = _entryLoginText,
                 Password = _entryPasswordText
@@ -105,75 +159,46 @@ namespace ProfileBook.ViewModels
             EntryConfirmPasswordText = string.Empty;
         }
 
-        private bool IsPassValidation()
+        private UserModel AddUser()
         {
-            if (!validator.CheckQuantity(_entryLoginText, 4))
-            {
-                ShowAlert(Properties.Resource.ValidatorNumberLogin);
-                ClearEntries();
-                return false;
-            }
-            if (validator.CheckIfFirstDigit(_entryLoginText))
-            {
-                ShowAlert(Properties.Resource.ValidatorFirst);
-                ClearEntries();
-                return false;
-            }
-            if (!validator.CheckQuantity(_entryPasswordText, 8))
-            {
-                ShowAlert(Properties.Resource.ValidatorNumberPassword);
-                ClearEntries();
-                return false;
-            }
-            if (!validator.CheckAvailability(_entryPasswordText))
-            {
-                ShowAlert(Properties.Resource.ValidatorMust);
-                ClearEntries();
-                return false;
-            }
-            if (!validator.ComparePasswords(_entryPasswordText, _entryConfitmPasswordText))
-            {
-                ShowAlert(Properties.Resource.ValidatorPassword);
-                ClearEntries();
-                return false;
-            }
+            UserModel user = null;
 
-            return true;
-        }
-
-        private async void ShowAlert(string message)
-        {
-            await pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle, message, "OK");
-        }
-
-        public ICommand SignUpCommand => new Command(SaveUser);
-
-        private void SaveUser()
-        {
             if (IsPassValidation())
             {
-                var isBusy = authentication.CheckLogin(repository, _entryLoginText);
+                var isBusy = _authenticationService.IsLogin(_entryLoginText);
 
                 if (isBusy)
                 {
-                    ShowAlert(Properties.Resource.AuthorizationAlert);
+                    ShowAlert(Resource.AuthorizationAlert);
                     ClearEntries();
                 }
                 else
                 {
-                    var user = CreateUser();
-                    authorization.SaveUser(repository, user);
-                    GoToSignInView(user);
+                    user = CreateUser();
+                    _authenticationService.AddUser(user);
                 }
+            }
+
+            return user;
+        }
+
+        #endregion
+
+        #region ---Private Helpers ---
+
+        private async void OnSignUpTap()
+        {
+            var user = AddUser();
+
+            if(user != null)
+            {
+                var parameters = new NavigationParameters();
+                parameters.Add("login", user.Login);
+
+                await navigationService.GoBackAsync(parameters);
             }
         }
 
-        private async void GoToSignInView(User user)
-        {
-            var parameters = new NavigationParameters();
-            parameters.Add("login", user.Login);
-
-            await navigationService.GoBackAsync(parameters);
-        }
+        #endregion
     }
 }

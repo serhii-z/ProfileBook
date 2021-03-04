@@ -4,7 +4,7 @@ namespace ProfileBook.Validators
 {
     public class Validator : IValidator
     {
-        public bool CheckIfFirstDigit(string item)
+        public bool IsFirstSimbolDigit(string item)
         {
             var hasNumber = new Regex(@"^[0-9]");
 
@@ -16,7 +16,7 @@ namespace ProfileBook.Validators
             return false;
         }
 
-        public bool ComparePasswords(string password, string confirm)
+        public bool IsPasswordsEqual(string password, string confirm)
         {
             if (password.Equals(confirm))
             {
@@ -26,7 +26,7 @@ namespace ProfileBook.Validators
             return false;
         }
 
-        public bool CheckQuantity(string item, int minLength)
+        public bool IsQuantityCorrect(string item, int minLength)
         {
             var pattern = @"^.{" + $"{minLength}" + ",16}$";
             var hasSequence = new Regex(pattern);
@@ -39,7 +39,7 @@ namespace ProfileBook.Validators
             return false;
         }
 
-        public bool CheckAvailability(string item)
+        public bool IsAvailability(string item)
         {
             var hasNumber = new Regex(@"[0-9]+");
             var hasUpperChar = new Regex(@"[A-Z]+");

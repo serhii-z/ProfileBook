@@ -1,36 +1,46 @@
 ﻿using Acr.UserDialogs;
 using Prism.Navigation;
 using Prism.Services;
-using ProfileBook.Models;
-using ProfileBook.Servises.Authentication;
 using ProfileBook.Servises.Authorization;
 using ProfileBook.Servises.Profile;
-using ProfileBook.Servises.Repository;
-using ProfileBook.Servises.Settings;
-using ProfileBook.Validators;
 using System;
 using System.Windows.Input;
 using Xamarin.Forms;
+using ProfileBook.Properties;
+using ProfileBook.Models;
+using ProfileBook.Services.Profile;
 
 namespace ProfileBook.ViewModels
 {
     public class AddEditProfileViewModel : BaseViewModel
     {
-        private Profile _profile;
+        private ProfileModel _profile;
+        private IAuthorizationService _authorizationService;
+        private IProfileService _profileService;
+        private IPageDialogService _pageDialog;
+        private IProfileImageService _profileImageService;
 
-        public AddEditProfileViewModel(INavigationService navigationService, IRepository repository, 
-            ISettingsManager manager, IAuthorizationService authorization, 
-            IAuthenticationService authentication, IValidator validator, 
-            IProfileService profileService, IPageDialogService pageDialog) :
-            base(navigationService, repository, manager, authorization, authentication, validator, profileService, pageDialog)
+        public AddEditProfileViewModel(INavigationService navigationService, IAuthorizationService authorizationService, 
+            IProfileService profileService, IPageDialogService pageDialog, IProfileImageService profileImageService) :
+            base(navigationService)
         {
+            _authorizationService = authorizationService;
+            _profileService = profileService;
+            _pageDialog = pageDialog;
+            _profileImageService = profileImageService;
         }
 
-        private ImageSource _pictupeSource = "profile.png";
-        public ImageSource PictureSource
+        #region --- Public Properties ---
+
+        public ICommand SaveTapCommand => new Command(OnSaveTap);
+        public ICommand ImageTapCommand => new Command(OnImageTap);
+
+
+        private ImageSource _profileImage = "profile.png";
+        public ImageSource ProfileImage
         {
-            get => _pictupeSource;
-            set => SetProperty(ref _pictupeSource, value);
+            get => _profileImage;
+            set => SetProperty(ref _profileImage, value);
         }
 
         private string _entryNickNameText;
@@ -54,25 +64,29 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _editorText, value);
         }
 
+        #endregion
+
+        #region --- Private Methods ---
+
         private string ExtractPath()
         {
-            var path = _pictupeSource.ToString();
+            var path = _profileImage.ToString();
             path = path.Substring(6);
             return path;
         }
 
         private void CreateProfile()
         {
-            var userId = authorization.GetUserId();
+            var userId = _authorizationService.GetAuthorizedUserId();
             var path = ExtractPath();
 
-            _profile = new Profile()
+            _profile = new Models.ProfileModel()
             {
                 ImagePath = path,
                 NickName = _entryNickNameText,
                 Name = _entryNameText,
                 Description = _editorText,
-                StartDate = DateTime.Now,
+                CreationTime = DateTime.Now,
                 UserId = userId
             };
         }
@@ -84,89 +98,88 @@ namespace ProfileBook.ViewModels
             _profile.NickName = _entryNickNameText;
             _profile.Name = _entryNameText;
             _profile.Description = _editorText;
+            _profile.CreationTime = DateTime.Now;
         }
 
         private void ShowDataProfile()
         {
-            PictureSource = _profile.ImagePath;
+            ProfileImage = _profile.ImagePath;
             EntryNickNameText = _profile.NickName;
             EntryNameText = _profile.Name;
             EditorText = _profile.Description;
         }
 
-        public ICommand TapCommand => new Command(ReplacePicture);
-
-        public void ReplacePicture()
-        {
-            UserDialogs.Instance.ActionSheet(new ActionSheetConfig()
-                        .SetTitle(Properties.Resource.AddEditDialog)
-                        .Add(Properties.Resource.AddEditGalery, () =>
-                        {
-                            ReplaceFromGalary();
-                        })
-                        .Add(Properties.Resource.AddEditCamera, () =>
-                        {
-                            ReplaceFromCamera();
-                        })
-                        .Add(Properties.Resource.AddEditDelete, () => 
-                        {
-                            PictureSource = "profile.png";
-                        })
-                    );
-        }
-
         private async void ReplaceFromGalary()
         {
-            var photoPath = await profileService.GetPathFromGalary();
+            var photoPath = await _profileImageService.GetPathFromGalary();
 
             if(!string.IsNullOrEmpty(photoPath))
             {
-                PictureSource = ImageSource.FromFile(photoPath);
+                ProfileImage = ImageSource.FromFile(photoPath);
             }
         }
 
         private async void ReplaceFromCamera()
         {
-            var photoPath = await profileService.GetPathAfterCamera();
+            var photoPath = await _profileImageService.GetPathAfterCamera();
 
             if (string.IsNullOrEmpty(photoPath))
             {
-                await pageDialog.DisplayAlertAsync(Properties.Resource.AlertTitle,
-                    Properties.Resource.AddEditAlert, "OK");
+                await _pageDialog.DisplayAlertAsync(Resource.AlertTitle, Resource.AddEditAlert, "OK");
             }
             else
             {
-                PictureSource = ImageSource.FromFile(photoPath);
+                ProfileImage = ImageSource.FromFile(photoPath);
             }
         }
 
-        public ICommand SaveCommand => new Command(SaveOrUpdate);
+        private void ReplaceWithDefault()
+        {
+            ProfileImage = "profile.png";
+        }
 
         private void SaveOrUpdate()
         {
             if (_profile == null)
             {
                 CreateProfile();
-                profileService.SaveProfile(repository, _profile);
+                _profileService.AddProfile(_profile);
             }
             else
             {
                 UpdateProfile();
-                profileService.UpdateProfile(repository, _profile);
+                _profileService.UpdateProfile(_profile);
             }
-
-            GoToMainListView();
         }
 
-        private async void GoToMainListView()
+        #endregion
+
+        #region --- Private Helpers ---
+
+        private async void OnSaveTap()
         {
+            SaveOrUpdate();
+
             if (!string.IsNullOrEmpty(_entryNickNameText) && !string.IsNullOrEmpty(_entryNameText))
                 await navigationService.GoBackAsync();
         }
 
+        private void OnImageTap()
+        {
+           UserDialogs.Instance.ActionSheet(new ActionSheetConfig()
+                        .SetTitle(Resource.AddEditDialog)
+                        .Add(Resource.AddEditGalery, ReplaceFromGalary)
+                        .Add(Resource.AddEditCamera, ReplaceFromCamera)
+                        .Add(Resource.AddEditDelete, ReplaceWithDefault));
+        }
+
+        #endregion
+
+        #region --- Overrides ---
+
         public override void Initialize(INavigationParameters parameters)
         {
-            if (parameters.TryGetValue("profile", out Profile profile))
+            if (parameters.TryGetValue("profile", out ProfileModel profile))
             {
                 _profile = profile;
 
@@ -176,5 +189,7 @@ namespace ProfileBook.ViewModels
                 }                 
             }
         }
+
+        #endregion
     }
 }

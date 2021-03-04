@@ -1,18 +1,19 @@
-﻿using Prism.Mvvm;
-using Prism.Navigation;
+﻿using Prism.Navigation;
 using ProfileBook.Models;
 using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace ProfileBook.ViewModels
 {
-    public class ModalViewModel : BindableBase, IInitialize
+    public class ModalViewModel : BaseViewModel
     {
-        private INavigationService _navigationService;
-        public ModalViewModel(INavigationService navigationService)
+        public ModalViewModel(INavigationService navigationService) : base(navigationService)
         {
-            _navigationService = navigationService;
         }
+
+        #region --- Public Properties ---
+
+        public ICommand GoBackTapCommand => new Command(OnGoBackTap);
 
         private ImageSource _pictupeSource;
         public ImageSource PictureSource
@@ -21,19 +22,27 @@ namespace ProfileBook.ViewModels
             set => SetProperty(ref _pictupeSource, value);
         }
 
-        public ICommand GoBackCommand => new Command(GoToBack);
+        #endregion
 
-        private async void GoToBack()
+        #region --- Private Helpers ---
+
+        private async void OnGoBackTap()
         {
-            await _navigationService.GoBackAsync(useModalNavigation: true);
+            await navigationService.GoBackAsync(useModalNavigation: true);
         }
 
-        public void Initialize(INavigationParameters parameters)
+        #endregion
+
+        #region --- Overrides ---
+
+        public override void Initialize(INavigationParameters parameters)
         {
-            if (parameters.TryGetValue("profile", out Profile value))
+            if (parameters.TryGetValue("profile", out ProfileModel value))
             {
                 PictureSource = ImageSource.FromFile(value.ImagePath);
             }
         }
+
+        #endregion
     }
 }
